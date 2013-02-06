@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=0.0.0
+Encoding=UTF-8
+Name=TTX
+GenericName=TTX Teletext Client
+Comment=Application for viewing Teletext on your desktop
+Exec=ttx
+Icon=ttx
+Terminal=false
+TryExec=ttx
+Type=Application
+StartupNotify=true
+Categories=GNOME;GTK;Network
