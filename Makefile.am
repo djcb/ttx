@@ -21,7 +21,7 @@ SUBDIRS=src
 desktopdir=$(datadir)/applications
 desktop_DATA=ttx.desktop
 
-icondir=$(datadir)/icons/hicolor
+icondir=$(datadir)/icons/hicolor/48x48/apps
 icon_DATA=ttx.png
 
 
