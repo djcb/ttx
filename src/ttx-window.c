@@ -17,7 +17,7 @@
 **
 */
 
-#define GETTEXT_PACKAGE "ttx"
+#include <config.h>
 #include <glib/gi18n-lib.h>
 
 #include <stdlib.h>

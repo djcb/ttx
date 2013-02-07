@@ -1,0 +1,8 @@
+[encoding: UTF-8]
+
+# List of source files which contain translatable strings.
+ttx.desktop.in
+src/ttx-window.c
+src/ttx-provider-nos-teletekst.c
+src/ttx-provider-mgr.c
+

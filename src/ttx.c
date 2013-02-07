@@ -17,7 +17,13 @@
 **
 */
 
+#include <config.h>
+#include <glib/gi18n-lib.h>
+#include <libintl.h>
+#include <locale.h>
+
 #include <ttx-window.h>
+
 
 struct _TTXData {
 
@@ -48,6 +54,12 @@ main (int argc, char *argv[])
 {
 	GtkWidget *win;
 	TTXData *data;
+
+	setlocale (LC_ALL, "");
+
+	bindtextdomain (GETTEXT_PACKAGE, TTXLOCALEDIR);
+	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
+	textdomain (GETTEXT_PACKAGE);
 
 	data = ttx_data_new ();
 

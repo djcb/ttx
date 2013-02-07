@@ -14,15 +14,51 @@
 ## along with this program; if not, write to the Free Software Foundation,
 ## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-SUBDIRS=src
+SUBDIRS= po src
 
 #ACLOCAL_AMFLAGS=-I m4
 
+desktop_in_files=ttx.desktop.in
 desktopdir=$(datadir)/applications
-desktop_DATA=ttx.desktop
+desktop_DATA= $(desktop_in_files:.desktop.in=.desktop)
+@INTLTOOL_DESKTOP_RULE@
 
 icondir=$(datadir)/icons/hicolor/48x48/apps
 icon_DATA=ttx.png
 
+EXTRA_DIST= ttx.desktop.in ttx.png
+ACLOCAL_AMFLAGS = -I m4
 
-EXTRA_DIST=ttx.desktop.in ttx.png
+MAINTAINERCLEANFILES =			\
+	$(srcdir)/ABOUT-NLS		\
+	$(srcdir)/INSTALL		\
+	$(srcdir)/aclocal.m4		\
+	$(srcdir)/autoscan.log		\
+	$(srcdir)/compile		\
+	$(srcdir)/config.guess		\
+	$(srcdir)/config.h.in		\
+	$(srcdir)/config.rpath		\
+	$(srcdir)/config.sub		\
+	$(srcdir)/configure.scan	\
+	$(srcdir)/depcomp		\
+	$(srcdir)/install-sh		\
+	$(srcdir)/ltmain.sh		\
+	$(srcdir)/missing		\
+	$(srcdir)/mkinstalldirs		\
+	$(srcdir)/m4/gettext.m4		\
+	$(srcdir)/m4/iconv.m4		\
+	$(srcdir)/m4/lib-ld.m4		\
+	$(srcdir)/m4/lib-link.m4	\
+	$(srcdir)/m4/lib-prefix.m4	\
+	$(srcdir)/m4/nls.m4		\
+	$(srcdir)/m4/po.m4		\
+	$(srcdir)/m4/progtest.m4	\
+	$(srcdir)/po/Makefile.in.in~	\
+	$(srcdir)/po/Makevars.template	\
+	$(srcdir)/po/Rules-quot		\
+	$(srcdir)/po/boldquot.sed	\
+	$(srcdir)/po/en@boldquot.header	\
+	$(srcdir)/po/en@quot.header	\
+	$(srcdir)/po/insert-header.sin	\
+	$(srcdir)/po/quot.sed		\
+	$(srcdir)/po/remove-potcdate.sin

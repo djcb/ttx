@@ -16,8 +16,7 @@
  ** Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  **
  */
-
-#define GETTEXT_PACKAGE "ttx"
+#include <config.h>
 #include <glib/gi18n-lib.h>
 
 #include "ttx-http.h"
@@ -163,6 +162,8 @@ ttx_provider_mgr_retrieve (TTXProviderMgr *self, TTXProviderID prov_id,
 static void
 register_providers (TTXProviderMgr *self)
 {
+	g_print ("%s", _("Dutch Teletekst Service"));
+
 	register_provider (self, TTX_PROVIDER_NOS_TELETEKST,
 			   "NOS Teletekst",
 			   _("Dutch Teletekst Service"),

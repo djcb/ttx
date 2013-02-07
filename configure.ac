@@ -30,9 +30,11 @@ AS_IF([test "x$prefix" = "xNONE"],[prefix=/usr/local])
 AC_SUBST(prefix)
 
 AC_PROG_CC
+AC_GNU_SOURCE
 AC_PROG_CC_STDC
 AC_PROG_INSTALL
 AC_HEADER_STDC
+
 
 # require pkg-config
 AC_PATH_PROG([PKG_CONFIG], [pkg-config], [no])
@@ -42,6 +44,17 @@ AS_IF([test "x$PKG_CONFIG" = "xno"],[
    *** in your path, or set the PKG_CONFIG environment variable
    *** to the full path to pkg-config.])
 ])
+
+IT_PROG_INTLTOOL([0.35.0])
+AC_CHECK_HEADERS([libintl.h])
+
+AM_GLIB_GNU_GETTEXT([external])
+GETTEXT_PACKAGE=ttx
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["${GETTEXT_PACKAGE}"],[gettext domain])
+
+TTXLOCALEDIR='${prefix}/${DATADIRNAME}/locale'
+AC_SUBST(TTXLOCALEDIR)
 
 # glib2?
 # we need 2.14 at least, because we use GRegex
@@ -71,10 +84,10 @@ AC_SUBST(LIBXML_LIBS)
 libxml_version="`$PKG_CONFIG --modversion libxml-2.0`"
 
 AC_CONFIG_FILES([
+po/Makefile.in
 Makefile
 src/Makefile
-ttx.desktop
-])
+ttx.desktop])
 AC_OUTPUT
 
 echo

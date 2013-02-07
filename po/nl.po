@@ -1,0 +1,7 @@
+#: ../src/ttx-window.c:370
+msgid "TTX Teletext Browser"
+msgstr "TTX Teletekst Browser"
+
+#: ../src/ttx-provider-mgr.c:167
+msgid "Dutch Teletekst Service"
+msgstr "Nederlandse Teletekst"
