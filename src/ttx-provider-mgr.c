@@ -162,8 +162,6 @@ ttx_provider_mgr_retrieve (TTXProviderMgr *self, TTXProviderID prov_id,
 static void
 register_providers (TTXProviderMgr *self)
 {
-	g_print ("%s", _("Dutch Teletekst Service"));
-
 	register_provider (self, TTX_PROVIDER_NOS_TELETEKST,
 			   "NOS Teletekst",
 			   _("Dutch Teletekst Service"),
