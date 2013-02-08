@@ -52,7 +52,7 @@ struct _TTXWindowPrivate {
 
 	TTXProviderMgr *prov_mgr;
 
-	gboolean special_cursor;
+	gboolean on_link;
 };
 #define TTX_WINDOW_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                         TTX_TYPE_WINDOW, \
@@ -228,6 +228,7 @@ get_toolbar (TTXWindow *self)
 	g_object_set_data (G_OBJECT(btn), BUTTON_ID,
 			   GSIZE_TO_POINTER(BUTTON_PREV));
 	g_signal_connect (btn, "clicked", G_CALLBACK(on_clicked), self);
+	gtk_widget_set_tooltip_text (GTK_WIDGET(btn), _("Previous page"));
 	gtk_box_pack_start (GTK_BOX (toolbox), GTK_WIDGET(btn),
 			    FALSE, FALSE, 0);
 
@@ -238,6 +239,7 @@ get_toolbar (TTXWindow *self)
 	g_object_set_data (G_OBJECT(btn), BUTTON_ID,
 			   GSIZE_TO_POINTER(BUTTON_NEXT));
 	g_signal_connect (btn, "clicked", G_CALLBACK(on_clicked), self);
+	gtk_widget_set_tooltip_text (GTK_WIDGET(btn), _("Next page"));
 	gtk_box_pack_start (GTK_BOX (toolbox), GTK_WIDGET(btn),
 			    FALSE, FALSE, 0);
 
@@ -245,6 +247,7 @@ get_toolbar (TTXWindow *self)
 	g_object_set_data (G_OBJECT(btn), BUTTON_ID,
 			   GSIZE_TO_POINTER(BUTTON_REFRESH));
 	g_signal_connect (btn, "clicked", G_CALLBACK(on_clicked), self);
+	gtk_widget_set_tooltip_text (GTK_WIDGET(btn), _("Refresh page"));
 	gtk_box_pack_start (GTK_BOX (toolbox), GTK_WIDGET(btn),
 			    FALSE, FALSE, 0);
 
@@ -252,7 +255,7 @@ get_toolbar (TTXWindow *self)
 }
 
 static gboolean
-cursor_on_link (TTXWindow *self, GtkWidget *w, GdkEvent *event,
+pointer_on_link (TTXWindow *self, GtkWidget *w, GdkEvent *event,
 	 unsigned *page, unsigned *subpage)
 {
 	GSList *cur;
@@ -288,7 +291,7 @@ on_button_press_event (GtkWidget *w, GdkEvent *event, TTXWindow *self)
 {
 	unsigned page, subpage;
 
-	if (cursor_on_link (self, w, event, &page, &subpage))
+	if (pointer_on_link (self, w, event, &page, &subpage))
 		ttx_window_request_page (self, page, subpage);
 
 	return TRUE;
@@ -298,24 +301,23 @@ on_button_press_event (GtkWidget *w, GdkEvent *event, TTXWindow *self)
 static gboolean
 on_motion_notify_event (GtkWidget *w, GdkEvent *event, TTXWindow *self)
 {
-	GdkWindow *win;
 	unsigned page, subpage;
 	GdkCursor *cursor;
+	gboolean on_link;
 
-	win = gtk_widget_get_window (w);
+	on_link = pointer_on_link (self, w, event, &page, &subpage);
+	if (on_link == self->priv->on_link)
+		return TRUE; /* already in the right state */
 
-	if (!cursor_on_link (self, w, event, &page, &subpage))
-		cursor = NULL;
+	if (!on_link)
+		cursor = NULL; /* default cursor */
 	else
 		cursor = gdk_cursor_new_for_display (
 			gdk_display_get_default(),
 			GDK_HAND1);
 
-	/* small optimization: only reset the cursor if needed */
-	if (cursor || self->priv->special_cursor) {
-		gdk_window_set_cursor (win, cursor);
-		self->priv->special_cursor = cursor ? TRUE : FALSE;
-	}
+	gdk_window_set_cursor (gtk_widget_get_window(w), cursor);
+	self->priv->on_link = on_link;
 
 	return TRUE;
 }
@@ -361,11 +363,11 @@ ttx_window_init (TTXWindow *self)
 
 	self->priv = TTX_WINDOW_GET_PRIVATE(self);
 
-	self->priv->prov_mgr	   = ttx_provider_mgr_new ();
-	self->priv->provider_id	   = TTX_PROVIDER_NOS_TELETEKST;
-	self->priv->page	   = 100;
-	self->priv->subpage	   = 1;
-	self->priv->special_cursor = FALSE;
+	self->priv->prov_mgr	= ttx_provider_mgr_new ();
+	self->priv->provider_id	= TTX_PROVIDER_NOS_TELETEKST;
+	self->priv->page	= 100;
+	self->priv->subpage	= 1;
+	self->priv->on_link	= FALSE;
 
 	gtk_window_set_title (GTK_WINDOW(self), _("TTX Teletext Browser"));
 	gtk_window_set_resizable (GTK_WINDOW(self), FALSE);
