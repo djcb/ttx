@@ -355,7 +355,6 @@ get_image (TTXWindow *self)
 	return img;
 }
 
-
 static void
 ttx_window_init (TTXWindow *self)
 {

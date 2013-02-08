@@ -49,6 +49,21 @@ ttx_data_destroy (TTXData *data)
 }
 
 
+static gboolean
+on_key_press_event (GtkWidget *w, GdkEventKey *event_key, TTXWindow *ttx)
+{
+	switch (event_key->keyval) {
+	case GDK_KEY_Q:
+	case GDK_KEY_q:
+		gtk_main_quit ();
+		break;
+	default:
+		break;
+	}
+
+	return FALSE;
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -66,10 +81,15 @@ main (int argc, char *argv[])
 	gtk_init (&argc, &argv);
 
 	win = ttx_window_new ();
+
 	g_signal_connect (G_OBJECT(win), "delete-event",
 			  G_CALLBACK(gtk_main_quit), NULL);
 
+	g_signal_connect (G_OBJECT(win), "key-press-event",
+			  G_CALLBACK(on_key_press_event), win);
+
 	gtk_widget_show (win);
+
 	ttx_window_request_page (TTX_WINDOW(win), 100, 1);
 
 	gtk_main ();
