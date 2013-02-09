@@ -45,6 +45,7 @@ void ttx_provider_mgr_destroy (TTXProviderMgr *self);
 
 typedef enum {
 	TTX_PROVIDER_NOS_TELETEKST = 0,
+	TTX_PROVIDER_EEN_BE,
 
 	TTX_PROVIDER_NUM
 } TTXProviderID;

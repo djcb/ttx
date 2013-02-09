@@ -21,7 +21,9 @@
 
 #include "ttx-http.h"
 #include "ttx-provider-mgr.h"
+
 #include "ttx-provider-nos-teletekst.h"
+#include "ttx-provider-een-be.h"
 
 static void register_providers (TTXProviderMgr *self);
 
@@ -166,6 +168,12 @@ register_providers (TTXProviderMgr *self)
 			   "NOS Teletekst",
 			   _("Dutch Teletekst Service"),
 			   ttx_provider_nos_teletekst_retrieve);
+
+
+	register_provider (self, TTX_PROVIDER_EEN_BE,
+			   "Een BE Teletekst",
+			   _("Flemish Teletekst Service"),
+			   ttx_provider_een_be_retrieve);
 
 	/* add other provider ... */
 }
