@@ -22,6 +22,8 @@
 #define __TTX_WINDOW_H__
 
 #include <gtk/gtk.h>
+#include <ttx-provider-mgr.h>
+
 /* other include files */
 
 G_BEGIN_DECLS
@@ -54,7 +56,10 @@ struct _TTXWindowClass {
 /* member functions */
 GType        ttx_window_get_type    (void) G_GNUC_CONST;
 GtkWidget *ttx_window_new  (void) G_GNUC_WARN_UNUSED_RESULT;
-void ttx_window_request_page (TTXWindow *self, unsigned page, unsigned subpage);
+
+void ttx_window_request_page (TTXWindow *self, TTXProviderID prov_id,
+			      unsigned page, unsigned subpage);
+
 gboolean ttx_window_set_image (TTXWindow *self, const char *path);
 
 G_END_DECLS

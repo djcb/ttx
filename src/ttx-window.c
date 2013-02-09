@@ -46,7 +46,7 @@ struct _TTXWindowPrivate {
 	GtkWidget *toolbar;
 	GtkWidget *page_entry, *subpage_entry;
 
-	TTXProviderID provider_id;
+	TTXProviderID prov_id;
 	unsigned page, subpage;
 	GSList *links;
 
@@ -115,10 +115,13 @@ on_completed (TTXRetrievalStatus status, TTXProviderID prov_id,
 	}
 
 	gtk_image_set_from_file (GTK_IMAGE(self->priv->image), path);
+
+
 	add_links (self, links);
 
 	self->priv->page    = page;
 	self->priv->subpage = subpage;
+	self->priv->prov_id = prov_id;
 
 	update_entry (self);
 }
@@ -138,7 +141,8 @@ on_entry_activate (GtkEntry *entry, TTXWindow *self)
 	page	= atoi (pagestr);
 	subpage = atoi (subpagestr);
 
-	ttx_window_request_page (self, page, subpage);
+	ttx_window_request_page (self, self->priv->prov_id,
+				 page, subpage);
 }
 
 
@@ -211,7 +215,8 @@ on_clicked (GtkToolButton *b, TTXWindow *self)
 	};
 
 	if (page >= 100 && page <= 999)
-		ttx_window_request_page (self, page, subpage);
+		ttx_window_request_page (self, self->priv->prov_id,
+					 page, subpage);
 }
 
 
@@ -292,7 +297,8 @@ on_button_press_event (GtkWidget *w, GdkEvent *event, TTXWindow *self)
 	unsigned page, subpage;
 
 	if (pointer_on_link (self, w, event, &page, &subpage))
-		ttx_window_request_page (self, page, subpage);
+		ttx_window_request_page (self, self->priv->prov_id,
+					 page, subpage);
 
 	return TRUE;
 }
@@ -344,17 +350,6 @@ get_image_box (TTXWindow *self, GtkWidget *img)
 }
 
 
-static GtkWidget*
-get_image (TTXWindow *self)
-{
-	GtkWidget *img;
-
-	img = gtk_image_new ();
-	gtk_widget_set_size_request (img, 440, 336);
-
-	return img;
-}
-
 static void
 ttx_window_init (TTXWindow *self)
 {
@@ -363,7 +358,6 @@ ttx_window_init (TTXWindow *self)
 	self->priv = TTX_WINDOW_GET_PRIVATE(self);
 
 	self->priv->prov_mgr	= ttx_provider_mgr_new ();
-	self->priv->provider_id	= TTX_PROVIDER_NOS_TELETEKST;
 	self->priv->page	= 100;
 	self->priv->subpage	= 1;
 	self->priv->on_link	= FALSE;
@@ -375,7 +369,7 @@ ttx_window_init (TTXWindow *self)
 	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 
 	self->priv->toolbar = get_toolbar (self);
-	self->priv->image   = get_image (self);
+	self->priv->image   = gtk_image_new ();
 
 	ebox = get_image_box (self, self->priv->image);
 
@@ -419,7 +413,8 @@ ttx_window_set_image (TTXWindow *self, const char *path)
 
 
 void
-ttx_window_request_page (TTXWindow *self, unsigned page, unsigned subpage)
+ttx_window_request_page (TTXWindow *self,
+			 TTXProviderID prov_id, unsigned page, unsigned subpage)
 {
 	g_return_if_fail (TTX_IS_WINDOW(self));
 	g_return_if_fail (page >= 100 && page <= 999);
@@ -433,7 +428,7 @@ ttx_window_request_page (TTXWindow *self, unsigned page, unsigned subpage)
 
 	ttx_provider_mgr_retrieve
 		(self->priv->prov_mgr,
-		 self->priv->provider_id,
+		 prov_id,
 		 page, subpage,
 		 (TTXProviderResultFunc)on_completed,
 		 self);
