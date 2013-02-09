@@ -75,10 +75,16 @@ save_message (SoupMessage *msg, const char *path)
 static void
 on_session (SoupSession *session, SoupMessage *msg, CBData *cbdata)
 {
+
+
 	if (msg->status_code != SOUP_STATUS_OK) {
-		g_warning ("retrieving url failed: %s",
+		char *uristr;
+		uristr = soup_uri_to_string (soup_message_get_uri (msg), FALSE);
+		g_warning ("retrieving %s failed: %s",
+			   uristr,
 			   msg->reason_phrase ? msg->reason_phrase :
 			   "something went wrong");
+		g_free (uristr);
 		cbdata->func (TTX_HTTP_STATUS_ERROR, NULL,
 			      cbdata->user_data);
 		return;
