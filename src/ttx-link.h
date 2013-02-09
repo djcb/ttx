@@ -57,6 +57,15 @@ TTXLink* ttx_link_new (unsigned left,
 void ttx_link_destroy (TTXLink *link);
 
 
+/**
+ * Get a string represention of a link object
+ *
+ * @param link a link
+ *
+ * @return a string, free with g_free
+ */
+char *ttx_link_to_string (TTXLink *link);
+
 G_END_DECLS
 
 #endif /*__TTX_LINK_H__*/

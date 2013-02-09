@@ -56,3 +56,16 @@ ttx_link_destroy (TTXLink *link)
 
 	g_slice_free (TTXLink, link);
 }
+
+
+
+char *
+ttx_link_to_string (TTXLink *link)
+{
+	g_return_val_if_fail (link, NULL);
+
+	return g_strdup_printf ("{(%03u,%03u)-(%03u,%03u)}->%u/%u",
+				link->left, link->top,
+				link->right, link->bottom,
+				link->page, link->subpage);
+}
