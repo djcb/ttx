@@ -37,6 +37,8 @@ ttx_SOURCES=					\
 	ttx-provider-mgr.c			\
 	ttx-provider-nos-teletekst.c		\
 	ttx-provider-nos-teletekst.h		\
+	ttx-provider-een-be.c			\
+	ttx-provider-een-be.h			\
 	ttx-window.c				\
 	ttx-window.h
 
