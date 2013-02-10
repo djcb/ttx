@@ -22,35 +22,31 @@
 
 #include <ttx-provider.h>
 
+
+
 /**
- * A new provider has to add three things here:
- * 1) add an ID for it in the TTXProviderID enum
- * 2) add a declaration of the function to create a TTXProvider*
+ * A new provider has to add two things here:
+ * 1) add a declaration of the function to create a TTXProvider*
  *    of the new kind
- * 3) connect the ID and the function by adding an entry
+ * 2) connect the ID and the function by adding an entry
  *    to TTX_PROVIDERS
  */
 
-/** enumeration of provider ids */
-typedef enum {
-	TTX_PROVIDER_NOS_TELETEKST  = 0, /**< NOS Teletekst */
-	TTX_PROVIDER_EEN_BE,             /**< VRT Teletekst */
-
-	TTX_PROVIDER_NUM                 /**< number of providers */
-} TTXProviderID;
-
-
-TTXProvider* ttx_provider_nos_teletekst (void);
+TTXProvider* ttx_provider_nos_nl (void);
 TTXProvider* ttx_provider_een_be (void);
+TTXProvider* ttx_provider_yle_fi (void);
 
+
+typedef const char*  TTXProviderID;
 typedef TTXProvider* (*TTXProviderFunc) (void);
 
 static const struct {
-	TTXProviderID     id;
+	TTXProviderID     prov_id;
 	TTXProviderFunc   new_func;
 } TTX_PROVIDERS[] = {
-	{ TTX_PROVIDER_NOS_TELETEKST, ttx_provider_nos_teletekst },
-	{ TTX_PROVIDER_EEN_BE,        ttx_provider_een_be }
+	{ "nos",        ttx_provider_nos_nl },
+	{ "vrt",        ttx_provider_een_be },
+	{ "yle",        ttx_provider_yle_fi }
 };
 
 
