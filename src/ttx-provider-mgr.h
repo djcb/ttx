@@ -21,6 +21,8 @@
 #define __TTX_PROVIDER_MGR_H__
 
 #include <ttx-http.h>
+#include <ttx-provider.h>
+#include <providers/ttx-providers.h>
 
 struct _TTXProviderMgr;
 typedef struct _TTXProviderMgr TTXProviderMgr;
@@ -43,47 +45,37 @@ TTXProviderMgr *ttx_provider_mgr_new (void);
 void ttx_provider_mgr_destroy (TTXProviderMgr *self);
 
 
-typedef enum {
-	TTX_PROVIDER_NOS_TELETEKST = 0,
-	TTX_PROVIDER_EEN_BE,
-
-	TTX_PROVIDER_NUM
-} TTXProviderID;
-
-
-typedef enum {
-	TTX_RETRIEVAL_OK,
-	TTX_RETRIEVAL_ERROR
-} TTXRetrievalStatus;
-
-typedef void (*TTXProviderResultFunc) (TTXRetrievalStatus status,
-				       TTXProviderID prov_id,
-				       unsigned page,
-				       unsigned subpage,
-				       const char *path,
-				       GSList *links,
-				       gpointer user_data);
+/**
+ * Get a provider by its ID
+ *
+ * @param self a provider mgr
+ * @param prov_id a provider id
+ *
+ * @return a provider or NULL in case of error. Do not
+ */
+const TTXProvider *ttx_provider_mgr_get_provider (TTXProviderMgr *self,
+						  TTXProviderID prov_id);
 
 
-typedef void (*TTXProviderRetrievalFunc) (unsigned page, unsigned subpage,
-					  const char *path,
-					  TTXProviderResultFunc func,
-					  gpointer user_data);
+typedef void (*TTXProviderForeachFunc) (TTXProviderID prov_id, const TTXProvider *prov, void *user_data);
 
 /**
- * Retrieve a page (image) for some provider
+ * Execute a function for all providers
  *
- * @param self a TTXProviderMgr
- * @param prov_id a provider-id
- * @param page a page number
- * @param subpage a subpage number
- * @param func callback function to call with results
- * @param user_data user pointer passed to callback
+ * @param self a provider-mgr
+ * @param func function to execute
+ * @param user_data user pointer passed to function
  */
-void ttx_provider_mgr_retrieve (TTXProviderMgr *self, TTXProviderID prov_id,
-				unsigned page, unsigned subpage,
-				TTXProviderResultFunc func,
-				gpointer user_data);
+void ttx_provider_mgr_foreach (TTXProviderMgr *self, TTXProviderForeachFunc func,
+			       void *user_data);
+
+
+
+
+gboolean ttx_provider_mgr_retrieve (TTXProviderMgr *self, TTXProviderID prov_id,
+				    unsigned page, unsigned subpage,
+				    TTXProviderResultFunc func,
+				    gpointer user_data);
 
 
 #endif /*__TTX_PROVIDER_MGR_H__*/
