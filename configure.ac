@@ -66,6 +66,11 @@ AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 glib_version="`$PKG_CONFIG --modversion glib-2.0`"
 
+PKG_CHECK_MODULES(GIO,gio-2.0 gio-unix-2.0)
+AC_SUBST(GIO_CFLAGS)
+AC_SUBST(GIO_LIBS)
+gio_version="`$PKG_CONFIG --modversion gio-2.0`"
+
 PKG_CHECK_MODULES(GTK,gtk+-3.0)
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_LIBS)
@@ -98,6 +103,7 @@ echo
 echo "ttx $VERSION configuration is complete."
 echo "------------------------------------------------"
 echo "GLib version                         : $glib_version"
+echo "GLib version                         : $gio_version"
 echo "GTK+ version                         : $gtk_version"
 echo "GDK-Pixbuf version                   : $gdk_pixbuf_version"
 echo "Soup version                         : $libsoup_version"
