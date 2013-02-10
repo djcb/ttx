@@ -36,7 +36,7 @@ retrieve (unsigned page, unsigned subpage,
 
 
 TTXProvider*
-ttx_provider_nos_teletekst (void)
+ttx_provider_nos_nl (void)
 {
 	return ttx_provider_new ("NOS Teletekst",
 				 _("Dutch Teletekst Service"),
