@@ -24,7 +24,6 @@
 
 #include "ttx-window.h"
 #include "ttx-link.h"
-#include "ttx-provider-mgr.h"
 
 
 /* 'private'/'protected' functions */
@@ -42,17 +41,17 @@ enum {
 
 struct _TTXWindowPrivate {
 
-	GtkWidget *image;
-	GtkWidget *toolbar;
-	GtkWidget *page_entry, *subpage_entry;
+	GtkWidget	*image;
+	GtkWidget	*toolbar;
+	GtkWidget	*page_entry, *subpage_entry;
 
-	TTXProviderID prov_id;
-	unsigned page, subpage;
-	GSList *links;
+	unsigned	 page, subpage;
+	GSList		*links;
 
-	TTXProviderMgr *prov_mgr;
+	TTXProviderMgr  *prov_mgr;
+	TTXProviderID	 prov_id;  /**< the active provider */
 
-	gboolean on_link;
+	gboolean	on_link;
 };
 #define TTX_WINDOW_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                         TTX_TYPE_WINDOW, \
@@ -104,7 +103,7 @@ update_entry (TTXWindow *self)
 
 
 static void
-on_completed (TTXRetrievalStatus status, TTXProviderID prov_id,
+on_completed (TTXRetrievalStatus status,
 	      unsigned page, unsigned subpage, const char *path,
 	      GSList *links, TTXWindow *self)
 {
@@ -121,7 +120,6 @@ on_completed (TTXRetrievalStatus status, TTXProviderID prov_id,
 
 	self->priv->page    = page;
 	self->priv->subpage = subpage;
-	self->priv->prov_id = prov_id;
 
 	update_entry (self);
 }
@@ -357,7 +355,6 @@ ttx_window_init (TTXWindow *self)
 
 	self->priv = TTX_WINDOW_GET_PRIVATE(self);
 
-	self->priv->prov_mgr	= ttx_provider_mgr_new ();
 	self->priv->page	= 100;
 	self->priv->subpage	= 1;
 	self->priv->on_link	= FALSE;
@@ -388,16 +385,23 @@ ttx_window_finalize (GObject *obj)
 
 	self = (TTXWindow*)obj;
 
-	ttx_provider_mgr_destroy (self->priv->prov_mgr);
 	free_links (self);
 
 	G_OBJECT_CLASS(parent_class)->finalize (obj);
 }
 
 GtkWidget*
-ttx_window_new (void)
+ttx_window_new (TTXProviderMgr *prov_mgr)
 {
-	return GTK_WIDGET(g_object_new(TTX_TYPE_WINDOW, NULL));
+	GObject *obj;
+
+	g_return_val_if_fail (prov_mgr, NULL);
+
+	obj = g_object_new(TTX_TYPE_WINDOW, NULL);
+	if (obj)
+		TTX_WINDOW(obj)->priv->prov_mgr = prov_mgr;
+
+	return GTK_WIDGET(obj);
 }
 
 gboolean
