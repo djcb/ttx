@@ -68,9 +68,7 @@ main (int argc, char *argv[])
 
 	gtk_widget_show (win);
 
-	ttx_window_request_page (TTX_WINDOW(win),
-				 TTX_PROVIDER_NOS_TELETEKST,
-				 100, 1);
+	ttx_window_request_page (TTX_WINDOW(win), "nos", 100, 1);
 
 	gtk_main ();
 

@@ -38,9 +38,9 @@ ttx_provider_mgr_new (void)
 	self = g_new0 (TTXProviderMgr, 1);
 
 	self->hash = g_hash_table_new_full
-		(g_direct_hash,
-		 g_direct_equal,
-		 NULL,
+		(g_str_hash,
+		 g_str_equal,
+		 g_free,
 		 (GDestroyNotify)ttx_provider_destroy);
 
 	for (u = 0; u != G_N_ELEMENTS(TTX_PROVIDERS); ++u) {
@@ -53,7 +53,7 @@ ttx_provider_mgr_new (void)
 		}
 
 		g_hash_table_insert (self->hash,
-				     GSIZE_TO_POINTER(TTX_PROVIDERS[u].id),
+				     g_strdup(TTX_PROVIDERS[u].prov_id),
 				     prov);
 	}
 
@@ -70,7 +70,6 @@ ttx_provider_mgr_destroy (TTXProviderMgr *self)
 		return;
 
 	g_free (self->tmpdir);
-
 	g_hash_table_destroy (self->hash);
 
 	g_free (self);
@@ -83,12 +82,10 @@ ttx_provider_mgr_get_provider (TTXProviderMgr *self, TTXProviderID prov_id)
 	TTXProvider *prov;
 
 	g_return_val_if_fail (self, NULL);
-	g_return_val_if_fail (prov_id < TTX_PROVIDER_NUM, NULL);
+	g_return_val_if_fail (prov_id, NULL);
 
-	prov = (TTXProvider*)g_hash_table_lookup (self->hash,
-						  GSIZE_TO_POINTER(prov_id));
-	if (!prov)
-		g_warning ("provider %u not found", prov_id); /* bug */
+	prov = (TTXProvider*)g_hash_table_lookup (self->hash, prov_id);
+	g_return_val_if_fail (prov, NULL); /* bug */
 
 	return prov;
 }
@@ -124,7 +121,7 @@ ttx_provider_mgr_foreach (TTXProviderMgr *self, TTXProviderForeachFunc func,
 
 
 gboolean
-ttx_provider_mgr_retrieve (TTXProviderMgr *self, TTXProviderID prov_id,
+ttx_provider_mgr_retrieve (TTXProviderMgr *self, const char *prov_id,
 			   unsigned page, unsigned subpage,
 			   TTXProviderResultFunc func,
 			   gpointer user_data)
@@ -134,7 +131,7 @@ ttx_provider_mgr_retrieve (TTXProviderMgr *self, TTXProviderID prov_id,
 	g_return_val_if_fail (self, FALSE);
 	g_return_val_if_fail (100 <= page && page <= 999, FALSE);
 	g_return_val_if_fail (subpage > 0, FALSE);
-	g_return_val_if_fail (prov_id < TTX_PROVIDER_NUM, FALSE);
+	g_return_val_if_fail (prov_id, FALSE);
 
 	prov = ttx_provider_mgr_get_provider (self, prov_id);
 	g_return_val_if_fail (prov, FALSE);
