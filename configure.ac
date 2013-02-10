@@ -17,11 +17,13 @@
 AC_INIT([ttx],[0.0.0],[],[ttx])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([src/ttx.c])
+AC_CONFIG_MACRO_DIR([m4])
 
 # libtoolize wants to put some stuff in here; if you have an old
 # autotools/libtool setup. you can try to comment this out
 #AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([1.10 no-define foreign])
+
 
 # silent build if we have a new enough automake
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
@@ -35,6 +37,7 @@ AC_PROG_CC_STDC
 AC_PROG_INSTALL
 AC_HEADER_STDC
 
+LT_INIT
 
 # require pkg-config
 AC_PATH_PROG([PKG_CONFIG], [pkg-config], [no])
@@ -87,6 +90,7 @@ AC_CONFIG_FILES([
 po/Makefile.in
 Makefile
 src/Makefile
+src/providers/Makefile
 ttx.desktop])
 AC_OUTPUT
 
