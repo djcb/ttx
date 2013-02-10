@@ -17,11 +17,11 @@
 SUBDIRS=providers
 
 AM_CPPFLAGS=-I${top_srcdir} $(GLIB_CFLAGS) $(GTK_CFLAGS)		\
-	$(GDK_PIXBUF_CFLAGS) $(LIBSOUP_CFLAGS) $(LIBXML_CFLAGS)		\
-	-DICONDIR='"$(icondir)"' -DGTK_DISABLE_DEPRECATED		\
-	-DGDK_PIXBUF_DISABLE_DEPRECATED -DGDK_DISABLE_DEPRECATED	\
-	-DPANGO_DISABLE_DEPRECATED -DG_DISABLE_SINGLE_INCLUDES		\
-	-DGTK_DISABLE_SINGLE_INCLUDES					\
+	$(GIO_CFLAGS) $(GDK_PIXBUF_CFLAGS) $(LIBSOUP_CFLAGS)		\
+	$(LIBXML_CFLAGS) -DICONDIR='"$(icondir)"'			\
+	-DGTK_DISABLE_DEPRECATED -DGDK_PIXBUF_DISABLE_DEPRECATED	\
+	-DGDK_DISABLE_DEPRECATED -DPANGO_DISABLE_DEPRECATED		\
+	-DG_DISABLE_SINGLE_INCLUDES -DGTK_DISABLE_SINGLE_INCLUDES	\
 	-DTTXLOCALEDIR='"$(TTXLOCALEDIR)"'
 
 AM_CFLAGS=-Wall -Wextra -Wno-unused-parameter -Wdeclaration-after-statement
@@ -42,7 +42,10 @@ ttx_SOURCES=					\
 	ttx-provider-mgr.c			\
 	ttx-provider-mgr.h			\
 	ttx-provider-type-1.c			\
-	ttx-provider-type-1.h
+	ttx-provider-type-1.h			\
+	ttx-provider-type-2.c			\
+	ttx-provider-type-2.h
+
 
 ttx_LDADD=					\
 	${GLIB_LIBS}				\
@@ -50,4 +53,5 @@ ttx_LDADD=					\
 	$(GDK_PIXBUF_LIBS)			\
 	$(LIBSOUP_LIBS)				\
 	$(LIBXML_LIBS)				\
+	$(GIO_LIBS)				\
 	providers/libproviders.la
