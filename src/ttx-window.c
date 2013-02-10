@@ -25,18 +25,24 @@
 #include "ttx-window.h"
 #include "ttx-link.h"
 
+static void	ttx_window_class_init  (TTXWindowClass *klass);
+static void	ttx_window_init        (TTXWindow *obj);
+static void	ttx_window_finalize    (GObject *obj);
+static void     ttx_window_constructed (GObject *obj);
 
-/* 'private'/'protected' functions */
-static void ttx_window_class_init (TTXWindowClass *klass);
-static void ttx_window_init       (TTXWindow *obj);
-static void ttx_window_finalize   (GObject *obj);
-
-/* list my signals  */
-enum {
+/* signals */
+typedef enum {
 	/* PAGE_REQUESTED, */
+	SIGNAL_NUM
+} TTXWindowSignals;
 
-	LAST_SIGNAL
-};
+
+/* properties */
+enum {
+	PROP_0            = 0, /**< dummy */
+	PROP_PROVIDER_MGR,     /**< TTXProviderMgr */
+	PROP_NUM
+} TTXWindowProperties;
 
 
 struct _TTXWindowPrivate {
@@ -44,12 +50,13 @@ struct _TTXWindowPrivate {
 	GtkWidget	*image;
 	GtkWidget	*toolbar;
 	GtkWidget	*page_entry, *subpage_entry;
+	GtkWidget       *combo;
 
 	unsigned	 page, subpage;
 	GSList		*links;
 
 	TTXProviderMgr  *prov_mgr;
-	TTXProviderID	 prov_id;  /**< the active provider */
+	char      	*prov_id;  /**< the active provider */
 
 	gboolean	on_link;
 };
@@ -58,21 +65,76 @@ struct _TTXWindowPrivate {
                                         TTXWindowPrivate))
 /* globals */
 static GtkWindowClass	*parent_class = NULL;
-/* static guint signals[LAST_SIGNAL]     = {0}; */
+/* static guint signals[SIGNAL_NUM]     = {0}; */
+
+
+static GParamSpec *obj_properties[PROP_NUM] = { NULL, };
+
+static void
+ttx_window_set_property (GObject *obj, guint prop_id,
+			 const GValue *val, GParamSpec *pspec)
+{
+	TTXWindow *self;
+
+	self = TTX_WINDOW(obj);
+
+	switch (prop_id) {
+	case PROP_PROVIDER_MGR:
+		self->priv->prov_mgr = g_value_get_pointer (val);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (self, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+ttx_window_get_property (GObject *obj, guint prop_id,
+	      GValue *val, GParamSpec *pspec)
+{
+	TTXWindow *self;
+
+	self = TTX_WINDOW(obj);
+
+	switch (prop_id)  {
+	case PROP_PROVIDER_MGR:
+		g_value_set_pointer (val, self->priv->prov_mgr);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (self, prop_id, pspec);
+		break;
+	}
+}
+
 
 G_DEFINE_TYPE (TTXWindow, ttx_window, GTK_TYPE_WINDOW);
 
 static void
 ttx_window_class_init (TTXWindowClass *klass)
 {
-	GObjectClass *gobject_class;
-	gobject_class = (GObjectClass*) klass;
+	GObjectClass *gobj_class;
+
+	gobj_class = (GObjectClass*) klass;
 
 	parent_class            = g_type_class_peek_parent (klass);
-	gobject_class->finalize = ttx_window_finalize;
 
-	g_type_class_add_private (gobject_class, sizeof(TTXWindowPrivate));
+	gobj_class->finalize	 = ttx_window_finalize;
+	gobj_class->set_property = ttx_window_set_property;
+	gobj_class->get_property = ttx_window_get_property;
+	gobj_class->constructed  = ttx_window_constructed;
+
+	g_type_class_add_private (gobj_class, sizeof(TTXWindowPrivate));
+
+	obj_properties[PROP_PROVIDER_MGR] =
+		g_param_spec_pointer ("provider-mgr",
+				      "provider-mgr",
+				      "TTXProviderMgr construct property",
+				      G_PARAM_CONSTRUCT_ONLY|G_PARAM_WRITABLE);
+
+	g_object_class_install_properties (gobj_class,
+					   PROP_NUM, obj_properties);
 }
+
 
 static void
 free_links (TTXWindow *self)
@@ -217,6 +279,62 @@ on_clicked (GtkToolButton *b, TTXWindow *self)
 					 page, subpage);
 }
 
+typedef enum {
+	COL_PROVIDER_ID,
+	COL_PROVIDER_NAME,
+	COL_NUM
+} TTXColumns;
+
+static void
+on_combo_changed (GtkComboBox *combo, TTXWindow *self)
+{
+	ttx_window_request_page (self,
+				 gtk_combo_box_get_active_id (combo),
+				 100, 1);
+}
+
+static void
+each_prov (TTXProviderID id, const TTXProvider *prov, GtkListStore *store)
+{
+	GtkTreeIter iter;
+	const char *name;
+
+	name = ttx_provider_name (prov);
+
+	gtk_list_store_append (store, &iter);
+	gtk_list_store_set (store, &iter,
+			    COL_PROVIDER_ID, id,
+			    COL_PROVIDER_NAME, name,
+			    -1);
+}
+
+static GtkWidget*
+get_provider_combo (TTXWindow *self)
+{
+	GtkWidget *combo;
+	GtkListStore *model;
+	GtkCellRenderer *render;
+
+	model = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_STRING);
+
+	ttx_provider_mgr_foreach (self->priv->prov_mgr,
+				  (TTXProviderForeachFunc)each_prov,
+				  model);
+
+	combo = gtk_combo_box_new_with_model (GTK_TREE_MODEL(model));
+	g_object_unref (model);
+
+	gtk_combo_box_set_id_column (GTK_COMBO_BOX(combo), COL_PROVIDER_ID);
+	render = gtk_cell_renderer_text_new ();
+	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(combo), render, TRUE);
+	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(combo), render,
+				       "text", COL_PROVIDER_NAME, NULL );
+
+	g_signal_connect (G_OBJECT(combo), "changed", G_CALLBACK(on_combo_changed),
+			  self);
+	return combo;
+}
+
 
 
 static GtkWidget*
@@ -254,6 +372,9 @@ get_toolbar (TTXWindow *self)
 	gtk_box_pack_start (GTK_BOX (toolbox), GTK_WIDGET(btn),
 			    FALSE, FALSE, 0);
 
+	self->priv->combo = get_provider_combo (self);
+	gtk_box_pack_end (GTK_BOX(toolbox), self->priv->combo,
+			  FALSE, FALSE, 0);
 	return toolbox;
 }
 
@@ -326,7 +447,7 @@ on_motion_notify_event (GtkWidget *w, GdkEvent *event, TTXWindow *self)
 	return TRUE;
 }
 
-static GtkWidget *
+static GtkWidget*
 get_image_box (TTXWindow *self, GtkWidget *img)
 {
 	GtkWidget *ebox;
@@ -349,20 +470,13 @@ get_image_box (TTXWindow *self, GtkWidget *img)
 
 
 static void
-ttx_window_init (TTXWindow *self)
+ttx_window_constructed (GObject *obj)
 {
 	GtkWidget *vbox, *ebox;
+	TTXWindow *self;
 
-	self->priv = TTX_WINDOW_GET_PRIVATE(self);
+	self = TTX_WINDOW(obj);
 
-	self->priv->page	= 100;
-	self->priv->subpage	= 1;
-	self->priv->on_link	= FALSE;
-
-	gtk_window_set_title (GTK_WINDOW(self), _("TTX Teletext Browser"));
-	gtk_window_set_resizable (GTK_WINDOW(self), FALSE);
-
-	gtk_window_set_icon_name (GTK_WINDOW(self), "ttx");
 	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 
 	self->priv->toolbar = get_toolbar (self);
@@ -373,9 +487,27 @@ ttx_window_init (TTXWindow *self)
 	gtk_box_pack_start (GTK_BOX(vbox), ebox,TRUE, TRUE, 2);
 	gtk_box_pack_start (GTK_BOX(vbox), self->priv->toolbar,
 			    FALSE, FALSE, 0);
+
 	gtk_widget_show_all (vbox);
 
 	gtk_container_add (GTK_CONTAINER(self), vbox);
+
+}
+
+
+static void
+ttx_window_init (TTXWindow *self)
+{
+	self->priv = TTX_WINDOW_GET_PRIVATE(self);
+
+	self->priv->page	= 100;
+	self->priv->subpage	= 1;
+	self->priv->on_link	= FALSE;
+
+	gtk_window_set_title (GTK_WINDOW(self), _("TTX Teletext Browser"));
+	gtk_window_set_resizable (GTK_WINDOW(self), FALSE);
+
+	gtk_window_set_icon_name (GTK_WINDOW(self), "ttx");
 }
 
 static void
@@ -383,25 +515,22 @@ ttx_window_finalize (GObject *obj)
 {
 	TTXWindow *self;
 
-	self = (TTXWindow*)obj;
+	self = TTX_WINDOW(obj);
 
 	free_links (self);
+	g_free (self->priv->prov_id);
 
-	G_OBJECT_CLASS(parent_class)->finalize (obj);
+	G_OBJECT_CLASS(parent_class)->finalize (G_OBJECT(self));
 }
 
 GtkWidget*
 ttx_window_new (TTXProviderMgr *prov_mgr)
 {
-	GObject *obj;
-
 	g_return_val_if_fail (prov_mgr, NULL);
 
-	obj = g_object_new(TTX_TYPE_WINDOW, NULL);
-	if (obj)
-		TTX_WINDOW(obj)->priv->prov_mgr = prov_mgr;
-
-	return GTK_WIDGET(obj);
+	return GTK_WIDGET(g_object_new(TTX_TYPE_WINDOW,
+				       "provider-mgr", prov_mgr,
+				       NULL));
 }
 
 gboolean
@@ -420,9 +549,12 @@ void
 ttx_window_request_page (TTXWindow *self,
 			 TTXProviderID prov_id, unsigned page, unsigned subpage)
 {
+	char *tmp;
+
 	g_return_if_fail (TTX_IS_WINDOW(self));
 	g_return_if_fail (page >= 100 && page <= 999);
 	g_return_if_fail (subpage > 0);
+	g_return_if_fail (prov_id);
 
 	if (page > 999 || subpage < 1) {
 		g_warning ("invalid page %u/%u", page, subpage);
@@ -436,4 +568,11 @@ ttx_window_request_page (TTXWindow *self,
 		 page, subpage,
 		 (TTXProviderResultFunc)on_completed,
 		 self);
+
+	tmp = self->priv->prov_id;
+	self->priv->prov_id = g_strdup (prov_id);
+	g_free (tmp);
+
+	gtk_combo_box_set_active_id (GTK_COMBO_BOX(self->priv->combo),
+				     prov_id);
 }
