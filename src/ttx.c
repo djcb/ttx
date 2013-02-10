@@ -24,30 +24,8 @@
 
 #include <ttx-window.h>
 
-
-struct _TTXData {
-
-};
-typedef struct _TTXData TTXData;
-
-static TTXData*
-ttx_data_new (void)
-{
-	TTXData *self;
-
-	self	   = g_new0 (TTXData, 1);
-	return self;
-}
-
-static void
-ttx_data_destroy (TTXData *data)
-{
-	if (!data)
-		return;
-
-	g_free (data);
-}
-
+#include <providers/ttx-providers.h>
+#include <ttx-provider-mgr.h>
 
 static gboolean
 on_key_press_event (GtkWidget *w, GdkEventKey *event_key, TTXWindow *ttx)
@@ -68,7 +46,7 @@ int
 main (int argc, char *argv[])
 {
 	GtkWidget *win;
-	TTXData *data;
+	TTXProviderMgr *prov_mgr;
 
 	setlocale (LC_ALL, "");
 
@@ -76,11 +54,11 @@ main (int argc, char *argv[])
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 
-	data = ttx_data_new ();
+	prov_mgr = ttx_provider_mgr_new ();
 
 	gtk_init (&argc, &argv);
 
-	win = ttx_window_new ();
+	win = ttx_window_new (prov_mgr);
 
 	g_signal_connect (G_OBJECT(win), "delete-event",
 			  G_CALLBACK(gtk_main_quit), NULL);
@@ -90,11 +68,13 @@ main (int argc, char *argv[])
 
 	gtk_widget_show (win);
 
-	ttx_window_request_page (TTX_WINDOW(win), 100, 1);
+	ttx_window_request_page (TTX_WINDOW(win),
+				 TTX_PROVIDER_NOS_TELETEKST,
+				 100, 1);
 
 	gtk_main ();
 
-	ttx_data_destroy (data);
+	ttx_provider_mgr_destroy (prov_mgr);
 
 	return 0;
 }
