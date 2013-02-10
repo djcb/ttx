@@ -55,7 +55,7 @@ save_message (SoupMessage *msg, const char *path)
 	}
 
 	g_object_get (G_OBJECT(msg), "response-body", &body, NULL);
-	buf	   = soup_message_body_flatten (body);
+	buf = soup_message_body_flatten (body);
 
 	written	= fwrite (buf->data, buf->length, 1, file);
 	if (written != 1) {
@@ -66,6 +66,8 @@ save_message (SoupMessage *msg, const char *path)
 		rv = TRUE;
 
 	soup_buffer_free (buf);
+	soup_message_body_free (body);
+
 	fclose (file);
 
 	return rv;
@@ -75,8 +77,6 @@ save_message (SoupMessage *msg, const char *path)
 static void
 on_session (SoupSession *session, SoupMessage *msg, CBData *cbdata)
 {
-
-
 	if (msg->status_code != SOUP_STATUS_OK) {
 		char *uristr;
 		uristr = soup_uri_to_string (soup_message_get_uri (msg), FALSE);
