@@ -77,5 +77,4 @@ gboolean ttx_provider_mgr_retrieve (TTXProviderMgr *self, TTXProviderID prov_id,
 				    TTXProviderResultFunc func,
 				    gpointer user_data);
 
-
 #endif /*__TTX_PROVIDER_MGR_H__*/

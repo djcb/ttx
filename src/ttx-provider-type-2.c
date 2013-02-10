@@ -76,10 +76,6 @@ report_download_failed (CBData *cbdata)
    we process it with a regexp.
 */
 
-/* #define AREA_REGEXP "<area shape=\"rect\" "                      \ */
-/* 	            "coords=\"([\\w+]),(\\w+),(\\w),(\\w+)\""	 \ */
-/*                     "href=http://.*P(\\d{3})_(\\d{2}).html/>" */
-
 #define AREA_REGEXP					\
 	"<area.*"	                 		\
 	"coords=\"(\\w+),(\\w+),(\\w+),(\\w+)\".*"      \
@@ -128,8 +124,6 @@ process_map (const char *map)
 
 	return lst;
 }
-
-
 
 
 
