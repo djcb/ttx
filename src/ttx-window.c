@@ -56,8 +56,6 @@ struct _TTXWindowPrivate {
 	GSList		*links;
 
 	TTXProviderMgr  *prov_mgr;
-	char      	*prov_id;  /**< the active provider */
-
 	gboolean	on_link;
 };
 #define TTX_WINDOW_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
@@ -201,7 +199,7 @@ on_entry_activate (GtkEntry *entry, TTXWindow *self)
 	page	= atoi (pagestr);
 	subpage = atoi (subpagestr);
 
-	ttx_window_request_page (self, self->priv->prov_id,
+	ttx_window_request_page (self, NULL,
 				 page, subpage);
 }
 
@@ -275,8 +273,7 @@ on_clicked (GtkToolButton *b, TTXWindow *self)
 	};
 
 	if (page >= 100 && page <= 999)
-		ttx_window_request_page (self, self->priv->prov_id,
-					 page, subpage);
+		ttx_window_request_page (self, NULL, page, subpage);
 }
 
 typedef enum {
@@ -288,9 +285,7 @@ typedef enum {
 static void
 on_combo_changed (GtkComboBox *combo, TTXWindow *self)
 {
-	ttx_window_request_page (self,
-				 gtk_combo_box_get_active_id (combo),
-				 100, 1);
+	ttx_window_request_page (self, NULL, 100, 1);
 }
 
 static void
@@ -416,8 +411,7 @@ on_button_press_event (GtkWidget *w, GdkEvent *event, TTXWindow *self)
 	unsigned page, subpage;
 
 	if (pointer_on_link (self, w, event, &page, &subpage))
-		ttx_window_request_page (self, self->priv->prov_id,
-					 page, subpage);
+		ttx_window_request_page (self, NULL, page, subpage);
 
 	return TRUE;
 }
@@ -518,7 +512,6 @@ ttx_window_finalize (GObject *obj)
 	self = TTX_WINDOW(obj);
 
 	free_links (self);
-	g_free (self->priv->prov_id);
 
 	G_OBJECT_CLASS(parent_class)->finalize (G_OBJECT(self));
 }
@@ -549,12 +542,12 @@ void
 ttx_window_request_page (TTXWindow *self,
 			 TTXProviderID prov_id, unsigned page, unsigned subpage)
 {
-	char *tmp;
+	const char *combo_id;
+	GtkComboBox *combo;
 
 	g_return_if_fail (TTX_IS_WINDOW(self));
 	g_return_if_fail (page >= 100 && page <= 999);
 	g_return_if_fail (subpage > 0);
-	g_return_if_fail (prov_id);
 
 	if (page > 999 || subpage < 1) {
 		g_warning ("invalid page %u/%u", page, subpage);
@@ -562,17 +555,19 @@ ttx_window_request_page (TTXWindow *self,
 		return;
 	}
 
+	combo	 = GTK_COMBO_BOX(self->priv->combo);
+	combo_id = gtk_combo_box_get_active_id (combo);
+
+	if (prov_id && g_strcmp0 (prov_id, combo_id) != 0) {
+		if (!gtk_combo_box_set_active_id (combo, prov_id))
+			g_warning ("failed to set active id to %s", prov_id);
+		return;
+	}
+
 	ttx_provider_mgr_retrieve
 		(self->priv->prov_mgr,
-		 prov_id,
+		 combo_id,
 		 page, subpage,
 		 (TTXProviderResultFunc)on_completed,
 		 self);
-
-	tmp = self->priv->prov_id;
-	self->priv->prov_id = g_strdup (prov_id);
-	g_free (tmp);
-
-	gtk_combo_box_set_active_id (GTK_COMBO_BOX(self->priv->combo),
-				     prov_id);
 }
