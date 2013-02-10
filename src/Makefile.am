@@ -14,6 +14,8 @@
 ## along with this program; if not, write to the Free Software Foundation,
 ## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
+SUBDIRS=providers
+
 AM_CPPFLAGS=-I${top_srcdir} $(GLIB_CFLAGS) $(GTK_CFLAGS)		\
 	$(GDK_PIXBUF_CFLAGS) $(LIBSOUP_CFLAGS) $(LIBXML_CFLAGS)		\
 	-DICONDIR='"$(icondir)"' -DGTK_DISABLE_DEPRECATED		\
@@ -33,18 +35,19 @@ ttx_SOURCES=					\
 	ttx-http.h				\
 	ttx-link.c				\
 	ttx-link.h				\
-	ttx-provider-mgr.h			\
-	ttx-provider-mgr.c			\
-	ttx-provider-nos-teletekst.c		\
-	ttx-provider-nos-teletekst.h		\
-	ttx-provider-een-be.c			\
-	ttx-provider-een-be.h			\
 	ttx-window.c				\
-	ttx-window.h
+	ttx-window.h				\
+	ttx-provider.c				\
+	ttx-provider.h				\
+	ttx-provider-mgr.c			\
+	ttx-provider-mgr.h			\
+	ttx-provider-type-1.c			\
+	ttx-provider-type-1.h
 
 ttx_LDADD=					\
 	${GLIB_LIBS}				\
 	${GTK_LIBS}				\
 	$(GDK_PIXBUF_LIBS)			\
 	$(LIBSOUP_LIBS)				\
-	$(LIBXML_LIBS)
+	$(LIBXML_LIBS)				\
+	providers/libproviders.la
