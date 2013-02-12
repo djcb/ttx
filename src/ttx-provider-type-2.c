@@ -93,11 +93,10 @@ process_map (const char *map)
 
 	rx = g_regex_new (AREA_REGEXP,
 			  G_REGEX_UNGREEDY|G_REGEX_OPTIMIZE|G_REGEX_CASELESS,
-			  0,
-			  &err);
+			  0, &err);
 	if (!rx) {
 		g_warning ("error in regexp: %s",
-			   err ? err->message : "something's wrong");
+			   err ? err->message : "something went wrong");
 		g_clear_error (&err);
 		return NULL;
 	}
@@ -105,6 +104,8 @@ process_map (const char *map)
 	lst = NULL;
 	while (g_regex_match (rx, map, 0, &minfo)) {
 		unsigned nums[6], u;
+		char *str;
+
 		for (u = 0; u != G_N_ELEMENTS(nums); ++u) {
 			char *str;
 			str = g_match_info_fetch (minfo, u + 1);
@@ -115,11 +116,13 @@ process_map (const char *map)
 				       ttx_link_new (nums[0], nums[2],
 						     nums[1], nums[3],
 						     nums[4], nums[5]));
-
-		map += strlen (g_match_info_fetch (minfo, 0));
+		str = g_match_info_fetch (minfo, 0);
+		map += strlen (str);
+		g_free (str);
 		g_match_info_free (minfo);
 	}
 
+	g_match_info_free (minfo);
 	g_regex_unref (rx);
 
 	return lst;
