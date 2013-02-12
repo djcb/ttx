@@ -57,7 +57,8 @@ const TTXProvider *ttx_provider_mgr_get_provider (TTXProviderMgr *self,
 						  TTXProviderID prov_id);
 
 
-typedef void (*TTXProviderForeachFunc) (TTXProviderID prov_id, const TTXProvider *prov, void *user_data);
+typedef void (*TTXProviderForeachFunc) (TTXProviderID prov_id,
+					const TTXProvider *prov, void *user_data);
 
 /**
  * Execute a function for all providers

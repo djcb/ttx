@@ -85,7 +85,6 @@ ttx_provider_mgr_get_provider (TTXProviderMgr *self, TTXProviderID prov_id)
 	g_return_val_if_fail (prov_id, NULL);
 
 	prov = (TTXProvider*)g_hash_table_lookup (self->hash, prov_id);
-	g_return_val_if_fail (prov, NULL); /* bug */
 
 	return prov;
 }
