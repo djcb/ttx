@@ -16,18 +16,22 @@
 
 SUBDIRS= po src
 
-#ACLOCAL_AMFLAGS=-I m4
-
 desktop_in_files=ttx.desktop.in
 desktopdir=$(datadir)/applications
 desktop_DATA= $(desktop_in_files:.desktop.in=.desktop)
-@INTLTOOL_DESKTOP_RULE@
 
 icondir=$(datadir)/icons/hicolor/48x48/apps
 icon_DATA=ttx.png
 
 EXTRA_DIST= ttx.desktop.in ttx.png
 ACLOCAL_AMFLAGS = -I m4
+
+
+INTLTOOL_FILES =			\
+		intltool-extract.in	\
+		intltool-merge.in	\
+		intltool-update.in
+
 
 MAINTAINERCLEANFILES =			\
 	$(srcdir)/ABOUT-NLS		\
@@ -62,3 +66,8 @@ MAINTAINERCLEANFILES =			\
 	$(srcdir)/po/insert-header.sin	\
 	$(srcdir)/po/quot.sed		\
 	$(srcdir)/po/remove-potcdate.sin
+
+DISTCLEANFILES=				\
+	intltool-merge			\
+	intltool-update			\
+	po/.intltool-merge-cache

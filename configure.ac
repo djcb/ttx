@@ -21,9 +21,7 @@ AC_CONFIG_MACRO_DIR([m4])
 
 # libtoolize wants to put some stuff in here; if you have an old
 # autotools/libtool setup. you can try to comment this out
-#AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([1.10 no-define foreign])
-
 
 # silent build if we have a new enough automake
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
@@ -48,16 +46,16 @@ AS_IF([test "x$PKG_CONFIG" = "xno"],[
    *** to the full path to pkg-config.])
 ])
 
+####################################################################
+# gettext
 IT_PROG_INTLTOOL([0.35.0])
-AC_CHECK_HEADERS([libintl.h])
+ALL_LINGUAS=`(cd "$srcdir/po" > /dev/null && ls *.po) | sed 's+\.po$++'`
+AM_GLIB_GNU_GETTEXT
+AC_SUBST(GETTEXT_PACKAGE,[ttx])
+AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["${GETTEXT_PACKAGE}"], [gettext domain])
+AC_SUBST(TTX_LOCALEDIR,[${datadir}/locale])
+####################################################################
 
-AM_GLIB_GNU_GETTEXT([external])
-GETTEXT_PACKAGE=ttx
-AC_SUBST(GETTEXT_PACKAGE)
-AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["${GETTEXT_PACKAGE}"],[gettext domain])
-
-TTXLOCALEDIR='${prefix}/${DATADIRNAME}/locale'
-AC_SUBST(TTXLOCALEDIR)
 
 # glib2?
 # we need 2.14 at least, because we use GRegex

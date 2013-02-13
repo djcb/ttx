@@ -3,7 +3,8 @@
 # List of source files which contain translatable strings.
 ttx.desktop.in
 src/ttx-window.c
-src/providers/ttx-provider-nos-teletekst.c
+src/providers/ttx-provider-nos-nl.c
 src/providers/ttx-provider-een-be.c
+src/providers/ttx-provider-yle-fi.c
 src/ttx-provider-mgr.c
 
