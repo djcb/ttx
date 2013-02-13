@@ -22,6 +22,8 @@
 #include <libintl.h>
 #include <locale.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 
 #include <ttx-window.h>
 
@@ -162,10 +164,8 @@ get_address_maybe (TTXProviderMgr *prov_mgr, Opts *opts, GError **err)
 	GRegex *rx;
 	GMatchInfo *minfo;
 	char* str;
-	gboolean rv;
 	const char *addr;
 
-	rv    = FALSE;
 	minfo = NULL;
 	str   = NULL;
 
@@ -225,6 +225,30 @@ version (void)
 	return 0;
 }
 
+static gboolean
+setup_l10n (void)
+{
+	errno = 0;
+
+	if (!setlocale (LC_ALL, ""))
+		goto errexit;
+
+	if (!bindtextdomain (GETTEXT_PACKAGE, TTX_LOCALEDIR))
+		goto errexit;
+
+	if (!bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8"))
+		goto errexit;
+
+	if (!textdomain (GETTEXT_PACKAGE))
+		goto errexit;
+
+	return TRUE;
+
+errexit:
+	g_printerr ("failed to setup l10n: %s", strerror (errno));
+	return FALSE;
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -233,14 +257,11 @@ main (int argc, char *argv[])
 	TTXProviderMgr *prov_mgr;
 	int rv;
 
-	setlocale (LC_ALL, "");
-	rv = 1;
-
-	bindtextdomain (GETTEXT_PACKAGE, TTXLOCALEDIR);
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-	textdomain (GETTEXT_PACKAGE);
-
+	if (!setup_l10n ())
+		return 1;
+	rv  = 1;
 	err = NULL;
+
 	prov_mgr = ttx_provider_mgr_new ();
 
 	memset (&opts, 0, sizeof(Opts));
@@ -263,9 +284,11 @@ leave:
 
 	ttx_provider_mgr_destroy (prov_mgr);
 	if (err) {
-		g_printerr ("%s", err ? err->message : "");
+		g_printerr ("%s\n", err ? err->message :
+			    _("an error occurred"));
 		g_clear_error (&err);
 	}
 
-	return 0;
+
+	return rv;
 }
