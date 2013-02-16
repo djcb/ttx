@@ -14,7 +14,8 @@
 ## along with this program; if not, write to the Free Software Foundation,
 ## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-AM_CPPFLAGS=-I${top_srcdir}/src $(GLIB_CFLAGS) -DTTXLOCALEDIR='"$(TTXLOCALEDIR)"'
+AM_CPPFLAGS=-I${top_srcdir}/src $(GLIB_CFLAGS) -D_GNU_SOURCE	\
+-DTTXLOCALEDIR='"$(TTXLOCALEDIR)"'
 AM_CFLAGS=-Wall -Wextra -Wno-unused-parameter -Wdeclaration-after-statement
 
 noinst_LTLIBRARIES=				\
@@ -24,6 +25,7 @@ libproviders_la_SOURCES=			\
 	ttx-providers.h				\
 	ttx-provider-nos-nl.c			\
 	ttx-provider-een-be.c			\
+	ttx-provider-rai-it.c			\
 	ttx-provider-yle-fi.c
 
 libproviders_la_LIBADD=				\
