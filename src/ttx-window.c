@@ -540,7 +540,8 @@ ttx_window_set_image (TTXWindow *self, const char *path)
 
 void
 ttx_window_request_page (TTXWindow *self,
-			 TTXProviderID prov_id, unsigned page, unsigned subpage)
+			 TTXProviderID prov_id, unsigned page,
+			 unsigned subpage)
 {
 	const char *combo_id;
 	GtkComboBox *combo;
