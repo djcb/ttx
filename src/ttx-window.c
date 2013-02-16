@@ -175,6 +175,7 @@ on_completed (TTXRetrievalStatus status,
 	if (status != TTX_RETRIEVAL_OK) {
 		g_warning ("an error occured retrieving %u/%u",
 			   page, subpage);
+		update_entry (self);
 		return;
 	}
 
