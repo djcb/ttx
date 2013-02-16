@@ -17,6 +17,7 @@
 **
 */
 #include <config.h>
+#include <errno.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -204,6 +205,10 @@ on_got_xml (TTXHTTPStatus hstatus, const char *xmlpath, CBData *cbdata)
 		      cbdata->user_data);
 
 	cb_data_destroy (cbdata);
+
+	if (remove (xmlpath) != 0)
+		g_warning ("failed to unlink %s: %s",
+			   xmlpath, strerror (errno));
 }
 
 

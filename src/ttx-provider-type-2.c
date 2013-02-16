@@ -23,6 +23,8 @@
 #include <string.h>
 #include <glib/gi18n-lib.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <errno.h>
 
 #include "ttx-provider.h"
 #include "ttx-link.h"
@@ -180,6 +182,10 @@ on_got_links (TTXHTTPStatus hstatus, const char *htmlpath,
 			     cbdata->user_data);
 
 	ttx_provider_cb_data_destroy (cbdata);
+
+	if (remove (htmlpath) != 0)
+		g_warning ("failed to unlink %s: %s",
+			  htmlpath, strerror (errno));
 }
 
 
@@ -230,7 +236,8 @@ ttx_provider_type_2_retrieve (unsigned page, unsigned subpage,
 	cbdata->result_func = result_func;
 	cbdata->remap_func  = remap_func;
 	cbdata->user_data   = user_data;
-	cbdata->page	    = page;
+	cbdata->page	    =
+		page;
 	cbdata->subpage	    = subpage;
 	cbdata->href_rx	    = g_strdup (href_rx);
 
