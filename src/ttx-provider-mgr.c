@@ -18,6 +18,9 @@
  */
 #include <config.h>
 #include <glib/gi18n-lib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
 
 #include "ttx-http.h"
 #include "ttx-provider-mgr.h"
@@ -68,6 +71,11 @@ ttx_provider_mgr_destroy (TTXProviderMgr *self)
 {
 	if (!self)
 		return;
+
+	if (self->tmpdir && access (self->tmpdir, F_OK) == 0)
+		if (remove (self->tmpdir) != 0)
+			g_warning ("failed to delete %s: %s",
+				   self->tmpdir, strerror(errno));
 
 	g_free (self->tmpdir);
 	g_hash_table_destroy (self->hash);
