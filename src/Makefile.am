@@ -39,6 +39,8 @@ ttx_SOURCES=					\
 	ttx-window.h				\
 	ttx-provider.c				\
 	ttx-provider.h				\
+	ttx-provider-helpers.c			\
+	ttx-providers-helpers.h			\
 	ttx-provider-mgr.c			\
 	ttx-provider-mgr.h			\
 	ttx-provider-type-1.c			\

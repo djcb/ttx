@@ -37,6 +37,8 @@ AC_HEADER_STDC
 
 LT_INIT
 
+AC_CHECK_FUNCS([strcasestr])
+
 # require pkg-config
 AC_PATH_PROG([PKG_CONFIG], [pkg-config], [no])
 AS_IF([test "x$PKG_CONFIG" = "xno"],[
