@@ -1,16 +1,16 @@
-#: ../src/ttx-window.c:347
+#: ../src/ttx-window.c:354
 msgid "Previous page"
 msgstr "Vorige"
 
-#: ../src/ttx-window.c:358
+#: ../src/ttx-window.c:365
 msgid "Next page"
 msgstr "Volgende"
 
-#: ../src/ttx-window.c:366
+#: ../src/ttx-window.c:373
 msgid "Refresh page"
 msgstr "Verversen"
 
-#: ../src/ttx-window.c:501
+#: ../src/ttx-window.c:508
 msgid "TTX Teletext Browser"
 msgstr "TTX Teletekst Browser"
 
@@ -22,6 +22,10 @@ msgstr "Nederlandse Teletekst"
 msgid "Flemish Teletekst Service"
 msgstr "Vlaamse Teletekst"
 
-#: ../src/providers/ttx-provider-yle-fi.c:55
+#: ../src/providers/ttx-provider-yle-fi.c:57
 msgid "Finnish Teletekst Service"
 msgstr "Finse Teletekst"
+
+#: ../src/providers/ttx-provider-rai-it.c:81
+msgid "Italian Teletekst Service"
+msgstr "Italiaanse teletekst"
