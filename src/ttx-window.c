@@ -21,6 +21,8 @@
 #include <glib/gi18n-lib.h>
 
 #include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
 
 #include "ttx-window.h"
 #include "ttx-link.h"
@@ -167,6 +169,9 @@ on_completed (TTXRetrievalStatus status,
 	      unsigned page, unsigned subpage, const char *path,
 	      GSList *links, TTXWindow *self)
 {
+	GdkPixbuf *pixbuf;
+	int h, w;
+
 	if (status != TTX_RETRIEVAL_OK) {
 		g_warning ("an error occured retrieving %u/%u",
 			   page, subpage);
@@ -175,6 +180,17 @@ on_completed (TTXRetrievalStatus status,
 
 	gtk_image_set_from_file (GTK_IMAGE(self->priv->image), path);
 
+	pixbuf = gtk_image_get_pixbuf (GTK_IMAGE(self->priv->image));
+	if (pixbuf) {
+		h = gdk_pixbuf_get_height (pixbuf);
+		w = gdk_pixbuf_get_width (pixbuf);
+		gtk_widget_set_size_request (self->priv->image, w, h);
+	}
+
+	/* /\* remove the tempfile *\/ */
+	if (remove (path) != 0)
+		g_warning ("failed to unlink %s: %s",
+			   path, strerror (errno));
 
 	add_links (self, links);
 
@@ -396,7 +412,6 @@ pointer_on_link (TTXWindow *self, GtkWidget *w, GdkEvent *event,
 		    link->top  <= y && y <= link-> bottom) {
 			*page	 = link->page;
 			*subpage = link->subpage;
-			/* g_print ("!!\n"); */
 			return TRUE;
 		}
 	}
@@ -475,6 +490,7 @@ ttx_window_constructed (GObject *obj)
 
 	self->priv->toolbar = get_toolbar (self);
 	self->priv->image   = gtk_image_new ();
+	gtk_widget_set_size_request (self->priv->image, 440, 336);
 
 	ebox = get_image_box (self, self->priv->image);
 
