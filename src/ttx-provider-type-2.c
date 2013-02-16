@@ -19,81 +19,38 @@
 #include <config.h>
 #include <gio/gio.h>
 
-#include <libxml/parser.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
-
+#define GNU_SOURCE
 #include <string.h>
 #include <glib/gi18n-lib.h>
+#include <stdlib.h>
 
 #include "ttx-provider.h"
 #include "ttx-link.h"
 #include "ttx-http.h"
+#include "ttx-provider-helpers.h"
 
-struct _CBData {
-	TTXProviderResultFunc func;
-	char *html_uri;
-	char *path;
-	gpointer user_data;
-	unsigned page, subpage;
-};
-typedef struct _CBData CBData;
-
-static void
-cb_data_destroy (CBData *cbdata)
-{
-	if (!cbdata)
-		return;
-
-	g_free (cbdata->path);
-	g_free (cbdata->html_uri);
-
-	g_free (cbdata);
-}
-
-
-static void
-report_download_failed (CBData *cbdata)
-{
-	g_warning ("error getting %u/%u",
-		   cbdata->page, cbdata->subpage);
-
-	cbdata->func (TTX_RETRIEVAL_ERROR,
-		      cbdata->page,
-		      cbdata->subpage,
-		      NULL, NULL,
-		      cbdata->user_data);
-}
-
-
-/* map looks something like:
-   <map name="P100_01">
-   <area shape="rect" coords="80,-12,110,0" href="http://abc/P100_01.html"/>
-   <area shape="rect" coords="230,36,260,48" href="http://abc/P199_01.html"/>
-   ...
-   </map>
-
-   we process it with a regexp.
-*/
-
-#define AREA_REGEXP					\
-	"<area.*"	                 		\
-	"coords=\"(\\w+),(\\w+),(\\w+),(\\w+)\".*"      \
-	"P(\\d{3})_(\\d{2}).*>"
 
 static GSList*
-process_map (const char *map)
+process_map (const char *map, const char *href_rx,
+	     TTXLinkRemapFunc remap_func)
 {
 	GRegex *rx;
 	GError *err;
 	GSList *lst;
 	GMatchInfo *minfo;
+	char *area_rx;
 
-	err = NULL;
+	err	= NULL;
+	area_rx = g_strconcat (
+		"<area.*"
+		"coords=\"\\s*(\\w+)\\s*,\\s*(\\w+)\\s*,"
+		"\\s*(\\w+)\\s*,\\s*(\\w+)\\s*\".*",
+		href_rx, NULL);
 
-	rx = g_regex_new (AREA_REGEXP,
+	rx = g_regex_new (area_rx,
 			  G_REGEX_UNGREEDY|G_REGEX_OPTIMIZE|G_REGEX_CASELESS,
 			  0, &err);
+	g_free (area_rx);
 	if (!rx) {
 		g_warning ("error in regexp: %s",
 			   err ? err->message : "something went wrong");
@@ -105,6 +62,7 @@ process_map (const char *map)
 	while (g_regex_match (rx, map, 0, &minfo)) {
 		unsigned nums[6], u;
 		char *str;
+		TTXLink *link;
 
 		for (u = 0; u != G_N_ELEMENTS(nums); ++u) {
 			char *str;
@@ -112,10 +70,20 @@ process_map (const char *map)
 			nums[u] = atoi (str);
 			g_free (str);
 		}
-		lst = g_slist_prepend (lst,
-				       ttx_link_new (nums[0], nums[2],
-						     nums[1], nums[3],
-						     nums[4], nums[5]));
+
+		/* some providers (e.g RAI) don't use subpages; we
+		 * just us a pseudo subpage 1 */
+		if (nums[5] == 0)
+			nums[5] = 1;
+
+		link = ttx_link_new (nums[0], nums[2],nums[1], nums[3],
+				     nums[4], nums[5]);
+		/* for some providers, the coordinates require
+		 * massaging */
+		if (remap_func)
+			remap_func (link);
+
+		lst = g_slist_prepend (lst, link);
 		str = g_match_info_fetch (minfo, 0);
 		map += strlen (str);
 		g_free (str);
@@ -134,7 +102,8 @@ process_map (const char *map)
 #define MAP_END   "</map>"
 
 static GSList*
-get_links (const char *htmlpath)
+get_links (const char *htmlpath, const char *href_rx,
+	   TTXLinkRemapFunc remap_func)
 {
 	gboolean rv;
 	GFile *file;
@@ -158,24 +127,25 @@ get_links (const char *htmlpath)
 
 	/* now, find the <map ...> .... </map> part; ugh yuck
 	 * screenscraping */
-	b = g_strstr_len (data, -1, MAP_BEGIN);
+	b = strcasestr (data, MAP_BEGIN);
 	if (!b)
 		goto leave;
 
-	e = g_strstr_len (b, -1, MAP_END);
+	e = strcasestr (b, MAP_END);
 	if (!e)
 		goto leave;
+
 	e += strlen(MAP_END);
 	e[0] = '\0';
 
-	/* this should get us something like:
+	/* this should yield us something like (for YLE):
 	<map name="P100_01">
 	<area shape="rect" coords="80,-12,110,0" href="http://abc/P100_01.html"/>
 	<area shape="rect" coords="230,36,260,48" href="http://abc/P199_01.html"/>
 	...
 	</map>
 	*/
-	lst = process_map (b);
+	lst = process_map (b, href_rx, remap_func);
 
 leave:
 	g_object_unref (file);
@@ -188,48 +158,50 @@ leave:
 
 
 static void
-on_got_html (TTXHTTPStatus hstatus, const char *htmlpath, CBData *cbdata)
+on_got_links (TTXHTTPStatus hstatus, const char *htmlpath,
+	     TTXProviderCBData *cbdata)
 {
 	GSList *links;
 
 	/* fail */
 	if (hstatus == TTX_HTTP_STATUS_ERROR) {
-		report_download_failed (cbdata);
-		cb_data_destroy (cbdata);
+		ttx_provider_report_failure (cbdata);
+		ttx_provider_cb_data_destroy (cbdata);
 		return;
 	}
 
 	/* parse html */
-	links = get_links (htmlpath);
+	links = get_links (htmlpath, cbdata->href_rx, cbdata->remap_func);
 
-	cbdata->func (TTX_RETRIEVAL_OK,
-		      cbdata->page, cbdata->subpage,
-		      cbdata->path, /* the image path */
-		      links,
-		      cbdata->user_data);
+	cbdata->result_func (TTX_RETRIEVAL_OK,
+			     cbdata->page, cbdata->subpage,
+			     cbdata->img_path, /* the image path */
+			     links,
+			     cbdata->user_data);
 
-	cb_data_destroy (cbdata);
+	ttx_provider_cb_data_destroy (cbdata);
 }
 
 
 
 static void
-on_got_page (TTXHTTPStatus hstatus, const char *path, CBData *cbdata)
+on_got_img (TTXHTTPStatus hstatus, const char *path,
+	     TTXProviderCBData *cbdata)
 {
 	char *htmlpath;
 
 	/* fail */
 	if (hstatus == TTX_HTTP_STATUS_ERROR) {
-		report_download_failed (cbdata);
-		cb_data_destroy (cbdata);
+		ttx_provider_report_failure (cbdata);
+		ttx_provider_cb_data_destroy (cbdata);
 		return;
 	}
 
-	cbdata->path = g_strdup (path);
+	cbdata->img_path = g_strdup (path);
 	htmlpath = g_strdup_printf ("%s.html", path);
 
-	ttx_http_retrieve (cbdata->html_uri, htmlpath,
-			   (TTXHTTPCompletedFunc)on_got_html,
+	ttx_http_retrieve (cbdata->links_uri, htmlpath,
+			   (TTXHTTPCompletedFunc)on_got_links,
 			   cbdata);
 	g_free (htmlpath);
 }
@@ -237,34 +209,38 @@ on_got_page (TTXHTTPStatus hstatus, const char *path, CBData *cbdata)
 
 gboolean
 ttx_provider_type_2_retrieve (unsigned page, unsigned subpage,
-			      const char *img_uri_frm, const char *html_uri_frm,
-			      const char *dir, TTXProviderResultFunc func,
+			      const char *img_uri_frm,
+			      const char *links_uri_frm,
+			      const char *href_rx,
+			      const char *dir,
+			      TTXLinkRemapFunc remap_func,
+			      TTXProviderResultFunc result_func,
 			      gpointer user_data)
 {
-	CBData *cbdata;
-	char *page_uri, *path;
+	TTXProviderCBData *cbdata;
+	char *img_uri, *path;
 
 	g_return_val_if_fail (page >= 100 && page <= 999, FALSE);
-	g_return_val_if_fail (subpage > 0, FALSE);
 	g_return_val_if_fail (img_uri_frm, FALSE);
-	g_return_val_if_fail (html_uri_frm, FALSE);
+	g_return_val_if_fail (links_uri_frm, FALSE);
 	g_return_val_if_fail (dir, FALSE);
-	g_return_val_if_fail (func, FALSE);
+	g_return_val_if_fail (result_func, FALSE);
 
-	cbdata		  = g_new0 (CBData, 1);
-	cbdata->func	  = func;
-	cbdata->user_data = user_data;
-	cbdata->page	  = page;
-	cbdata->subpage	  = subpage;
-	cbdata->path      = NULL;
-	cbdata->html_uri  = g_strdup_printf (html_uri_frm, page, subpage);
+	cbdata		    = ttx_provider_cb_data_new ();
+	cbdata->result_func = result_func;
+	cbdata->remap_func  = remap_func;
+	cbdata->user_data   = user_data;
+	cbdata->page	    = page;
+	cbdata->subpage	    = subpage;
+	cbdata->href_rx	    = g_strdup (href_rx);
 
-	page_uri = g_strdup_printf (img_uri_frm, page, subpage);
-	path = g_strdup_printf ("%s/%u-%u.gif", dir, page, subpage);
+	cbdata->links_uri = g_strdup_printf (links_uri_frm, page, subpage);
+	img_uri = g_strdup_printf (img_uri_frm, page, subpage);
+	path = g_strdup_printf ("%s/%u-%u.img", dir, page, subpage);
 
-	ttx_http_retrieve (page_uri, path, (TTXHTTPCompletedFunc)on_got_page,
+	ttx_http_retrieve (img_uri, path, (TTXHTTPCompletedFunc)on_got_img,
 			   cbdata);
-	g_free (page_uri);
+	g_free (img_uri);
 	g_free (path);
 
 	return TRUE;

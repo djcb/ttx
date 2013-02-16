@@ -16,12 +16,19 @@
 ** Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 **
 */
+#include <ttx-provider-helpers.h>
 
-#ifndef __TTX_PROVIDER_TYPE_1_H__
-#define __TTX_PROVIDER_TYPE_1_H__
+
+#ifndef __TTX_PROVIDER_TYPE_2_H__
+#define __TTX_PROVIDER_TYPE_2_H__
 
 /**
- * Get page / links for a 'type 2' provider (for lack of a better name)
+ * Get page / links for a 'type 2' provider (for lack of a better
+ * name). These providers have some image URL, and put the link
+ * information in an image-map (ie.
+ *   <map><area coords="1,2,3,4" href="...">...</map>
+ * the only thing provider-specific is the href.
+ *
  *
  * @param page the page number
  * @param subpage the subpage number
@@ -29,17 +36,26 @@
  *       (e.g., "http://www.yle.fi/tekstitv/images/P%u_%02u.gif")
  * @param html_uri_frm the URI format-string for the HTML-file with links info
  *       (e.g., "http://www.yle.fi/tekstitv/html/P%u_%02u.html")
- * @param path path for the image file for this page
- * @param func function to call with results
+ * @param area_href_regexp: a regexp that which has one or two submatches
+ *        that match page and optionally subpage
+ * @param dir directory for the image file for this page
+ * @param mapping_func a function to re-map link coordinates; some
+ *        providers (e.g. RAI) require this. If mapping_func == NULL,
+ *        do nothing (ie., 'identity')
+ * @param result_func function to call with results
  * @param user_data user pointer passed to the result function
  *
  * @return TRUE if initiating the retrieval worked, FALSE otherwise
  */
+
 gboolean
 ttx_provider_type_2_retrieve (unsigned page, unsigned subpage,
 			      const char *img_uri_frm, const char *html_uri_frm,
-			      const char *dir, TTXProviderResultFunc func,
+			      const char *area_href_regexp,
+			      const char *dir,
+			      TTXLinkRemapFunc remap_func,
+			      TTXProviderResultFunc result_func,
 			      gpointer user_data);
 
 
-#endif /*__TTX_PROVIDER_TYPE_1_H__*/
+#endif /*__TTX_PROVIDER_TYPE_2_H__*/
