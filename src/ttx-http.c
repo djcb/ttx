@@ -79,7 +79,8 @@ on_session (SoupSession *session, SoupMessage *msg, CBData *cbdata)
 {
 	if (msg->status_code != SOUP_STATUS_OK) {
 		char *uristr;
-		uristr = soup_uri_to_string (soup_message_get_uri (msg), FALSE);
+		uristr = soup_uri_to_string
+			(soup_message_get_uri (msg), FALSE);
 		g_warning ("retrieving %s failed: %s",
 			   uristr,
 			   msg->reason_phrase ? msg->reason_phrase :
