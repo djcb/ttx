@@ -53,15 +53,44 @@ struct _TTXWindowClass {
 	GtkWindowClass parent_class;
 };
 
-/* member functions */
+
+/**
+ * Get the GType for a TTXWindow
+ *
+ * @return the GType
+ */
 GType        ttx_window_get_type    (void) G_GNUC_CONST;
 
+/**
+ * create a new TTXWindow instance
+ *
+ * @param prov_mgr a provider manager
+ *
+ * @return a new TTXWindow, or NULL in case of error
+ */
 GtkWidget *ttx_window_new  (TTXProviderMgr *prov_mgr) G_GNUC_WARN_UNUSED_RESULT;
 
+/**
+ * request the TTXWindow to show a certain page
+ *
+ * @param self a TTXWindow
+ * @param prov_id the provider-id for the page to request
+ * @param page the page number [100 .. 999]
+ * @param subpage the subpage number [1 .. 99]
+ */
 void ttx_window_request_page (TTXWindow *self, TTXProviderID prov_id,
 			      unsigned page, unsigned subpage);
 
+/**
+ * set the image shown in the ttxwindow to some file
+ *
+ * @param self a TTXWindow
+ * @param path path to some image file
+ *
+ * @return TRUE if it worked, FALSE in case of error
+ */
 gboolean ttx_window_set_image (TTXWindow *self, const char *path);
+
 
 G_END_DECLS
 

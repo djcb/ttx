@@ -4,19 +4,20 @@
   changes in the Teletekst website. TTB was in Python, but TTX is written in C.
   TTX is very young, but the basics work.
 
-** providers      
-   
+** providers
+
    TTB only supported the Dutch Teletekst system, but TTX aims to support other
    Teletekst providers as well. Currently supported:
-   
+
    - NOS Teletekst (Dutch)
    - Eén Teletekst (Belgian, Dutch)
    - YLE (Finnish)
+   - RAI Televideo (Italian)
 
    TTX is designed to make it easy to add other providers, esp. when they are
    mere variations of providers which are already supported. See
    =src/providers/=
-   
+
 ** dependencies
 
    Just some very common libraries:
@@ -25,4 +26,3 @@
    - gtk+ 3.x
    - libsoup 2.4
    - libxml2
-   
