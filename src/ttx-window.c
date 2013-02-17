@@ -59,7 +59,10 @@ struct _TTXWindowPrivate {
 
 	TTXProviderMgr  *prov_mgr;
 	gboolean	on_link;
+
+	char	        *img_file;
 };
+
 #define TTX_WINDOW_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                         TTX_TYPE_WINDOW, \
                                         TTXWindowPrivate))
@@ -164,6 +167,23 @@ update_entry (TTXWindow *self)
 }
 
 
+/* clear the old image file, and set it to path (which may be NULL) */
+static void
+reset_img_file (TTXWindow *self, const char *path)
+{
+	/* /\* remove the _old_ tempfile *\/ */
+	if (self->priv->img_file &&
+	    access (self->priv->img_file, F_OK) != 0) {
+		if (remove (self->priv->img_file) != 0)
+			g_warning ("failed to unlink %s: %s",
+				   path, strerror (errno));
+	}
+
+	g_free (self->priv->img_file);
+	self->priv->img_file = path ? g_strdup (path) : NULL;
+}
+
+
 static void
 on_completed (TTXRetrievalStatus status,
 	      unsigned page, unsigned subpage, const char *path,
@@ -181,6 +201,7 @@ on_completed (TTXRetrievalStatus status,
 
 	gtk_image_set_from_file (GTK_IMAGE(self->priv->image), path);
 
+	/* resize the window */
 	pixbuf = gtk_image_get_pixbuf (GTK_IMAGE(self->priv->image));
 	if (pixbuf) {
 		h = gdk_pixbuf_get_height (pixbuf);
@@ -188,10 +209,7 @@ on_completed (TTXRetrievalStatus status,
 		gtk_widget_set_size_request (self->priv->image, w, h);
 	}
 
-	/* /\* remove the tempfile *\/ */
-	if (remove (path) != 0)
-		g_warning ("failed to unlink %s: %s",
-			   path, strerror (errno));
+	reset_img_file (self, path);
 
 	add_links (self, links);
 
@@ -251,7 +269,6 @@ get_entry_box (TTXWindow *self)
 
 	return entry_box;
 }
-
 
 
 enum Buttons {
@@ -457,6 +474,53 @@ on_motion_notify_event (GtkWidget *w, GdkEvent *event, TTXWindow *self)
 	return TRUE;
 }
 
+static void
+on_drag_data_get (GtkWidget *widget, GdkDragContext *drag_context,
+		  GtkSelectionData *sel_data, guint info, guint time,
+		  TTXWindow *self)
+{
+	char	*uris[2] = { NULL, NULL };
+	GError	*err;
+
+	if (!self->priv->img_file)
+		return;
+
+	err = NULL;
+	uris[0] = g_filename_to_uri (self->priv->img_file, NULL, &err);
+	if (!uris[0]) {
+		g_warning ("fail to get an uri for %s: %s",
+			   self->priv->img_file,
+			   err ? err->message : "something went wrong");
+		g_clear_error (&err);
+		return;
+	}
+
+	gtk_selection_data_set_uris (sel_data, uris);
+	g_free (uris[0]);
+}
+
+static void
+setup_dnd (TTXWindow *self, GtkWidget *ebox)
+{
+	GtkTargetEntry entries[] = {
+		{ "text/uri-list", 0, 1 },
+		{ "application/x-rootwindow-drop", 0, 2 }
+	};
+
+
+	/* note: without this, D&D does not work; see the Gtk docs */
+	gtk_event_box_set_visible_window (GTK_EVENT_BOX(ebox),
+					  FALSE);
+
+	/* setup drag & drop */
+	gtk_drag_source_set (ebox, GDK_BUTTON1_MASK,
+			     entries, G_N_ELEMENTS(entries),
+			     GDK_ACTION_COPY);
+	g_signal_connect (G_OBJECT(ebox), "drag-data-get",
+			  G_CALLBACK(on_drag_data_get), self);
+}
+
+
 static GtkWidget*
 get_image_box (TTXWindow *self, GtkWidget *img)
 {
@@ -464,7 +528,10 @@ get_image_box (TTXWindow *self, GtkWidget *img)
 
 	ebox = gtk_event_box_new ();
 
+	setup_dnd (self, ebox);
+
 	gtk_widget_add_events (ebox,
+			       GDK_BUTTON_PRESS_MASK |
 			       GDK_POINTER_MOTION_MASK|
 			       GDK_LEAVE_NOTIFY_MASK);
 
@@ -514,6 +581,7 @@ ttx_window_init (TTXWindow *self)
 	self->priv->page	= 100;
 	self->priv->subpage	= 1;
 	self->priv->on_link	= FALSE;
+	self->priv->img_file    = NULL;
 
 	gtk_window_set_title (GTK_WINDOW(self), _("TTX Teletext Browser"));
 	gtk_window_set_resizable (GTK_WINDOW(self), FALSE);
@@ -529,6 +597,7 @@ ttx_window_finalize (GObject *obj)
 	self = TTX_WINDOW(obj);
 
 	free_links (self);
+	reset_img_file (self, NULL);
 
 	G_OBJECT_CLASS(parent_class)->finalize (G_OBJECT(self));
 }
