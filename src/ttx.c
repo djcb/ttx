@@ -48,6 +48,15 @@ free_opts (Opts *opts)
 	g_strfreev (opts->params);
 }
 
+static void
+quit (GtkWidget *w)
+{
+	/* explicitly destroy the window, so it
+	 * can cleanup tmp files etc. */
+	gtk_widget_destroy (w);
+	gtk_main_quit ();
+}
+
 
 static gboolean
 on_key_press_event (GtkWidget *w, GdkEventKey *event_key, TTXWindow *ttx)
@@ -55,7 +64,7 @@ on_key_press_event (GtkWidget *w, GdkEventKey *event_key, TTXWindow *ttx)
 	switch (event_key->keyval) {
 	case GDK_KEY_Q:
 	case GDK_KEY_q:
-		gtk_main_quit ();
+		quit (GTK_WIDGET(ttx));
 		break;
 	default:
 		break;
@@ -73,7 +82,7 @@ start_gui (TTXProviderMgr *prov_mgr, Opts *opts)
 	win = ttx_window_new (prov_mgr);
 
 	g_signal_connect (G_OBJECT(win), "delete-event",
-			  G_CALLBACK(gtk_main_quit), NULL);
+			  G_CALLBACK(quit), win);
 
 	g_signal_connect (G_OBJECT(win), "key-press-event",
 			  G_CALLBACK(on_key_press_event), win);

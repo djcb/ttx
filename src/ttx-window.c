@@ -173,7 +173,7 @@ reset_img_file (TTXWindow *self, const char *path)
 {
 	/* /\* remove the _old_ tempfile *\/ */
 	if (self->priv->img_file &&
-	    access (self->priv->img_file, F_OK) != 0) {
+	    access (self->priv->img_file, F_OK) == 0) {
 		if (remove (self->priv->img_file) != 0)
 			g_warning ("failed to unlink %s: %s",
 				   path, strerror (errno));
