@@ -1,16 +1,60 @@
-#: ../src/ttx-window.c:354
+#: ../src/ttx.c:112
+msgid "enable debugging (false)"
+msgstr "debugging modus (false)"
+
+#: ../src/ttx.c:114
+msgid "show version and exit"
+msgstr "toon versie en beeindig programma"
+
+#: ../src/ttx.c:121
+msgid "options for ttx"
+msgstr "opties voor ttx"
+
+#: ../src/ttx.c:151
+#, c-format
+msgid "unknown teletext provider %s\n"
+msgstr "onbekende teletekst-aanbieder %s\n"
+
+#: ../src/ttx.c:157
+#, c-format
+msgid "page must be in the range [100..999]\n"
+msgstr "pagina moet tussen 100 en 999 zijn"
+
+#: ../src/ttx.c:162
+#, c-format
+msgid "subpage must be in the range [1..99]\n"
+msgstr "sub-pagina moet tussen 1 en 99 zijn"
+
+#: ../src/ttx.c:191
+#, c-format
+msgid ""
+"invalid link; expected: <provider-id>:<page>[/<subpage>]\n"
+"e.g., nos:101/1 or yle:200\n"
+msgstr ""
+"ongeldig adres; gebruik: <provider-id>:<pagina>[/<sub-pagina>]\n"
+"bijv., nos:101/1 of yle:200\n"
+
+#: ../src/ttx.c:224
+msgid "ttx teletext browser, version "
+msgstr "ttx  teletekst browser, versie "
+
+#: ../src/ttx.c:297
+msgid "an error occurred"
+msgstr "er is een fout opgetreden"
+
+#: ../src/ttx-window.c:381
 msgid "Previous page"
 msgstr "Vorige"
 
-#: ../src/ttx-window.c:365
+#: ../src/ttx-window.c:392
 msgid "Next page"
 msgstr "Volgende"
 
-#: ../src/ttx-window.c:373
+#: ../src/ttx-window.c:400
 msgid "Refresh page"
 msgstr "Verversen"
 
-#: ../src/ttx-window.c:508
+#: ../src/ttx-window.c:586
 msgid "TTX Teletext Browser"
 msgstr "TTX Teletekst Browser"
 
