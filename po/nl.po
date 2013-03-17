@@ -18,12 +18,12 @@ msgstr "onbekende teletekst-aanbieder %s\n"
 #: ../src/ttx.c:157
 #, c-format
 msgid "page must be in the range [100..999]\n"
-msgstr "pagina moet tussen 100 en 999 zijn"
+msgstr "pagina moet tussen 100 en 999 zijn\n"
 
 #: ../src/ttx.c:162
 #, c-format
 msgid "subpage must be in the range [1..99]\n"
-msgstr "sub-pagina moet tussen 1 en 99 zijn"
+msgstr "sub-pagina moet tussen 1 en 99 zijn\n"
 
 #: ../src/ttx.c:191
 #, c-format
