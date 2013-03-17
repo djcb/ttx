@@ -26,3 +26,8 @@
    - gtk+ 3.x
    - libsoup 2.4
    - libxml2
+
+** download
+
+   For tarballs, see:
+   http://code.google.com/p/ttx-teletext/downloads/list
