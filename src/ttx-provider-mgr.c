@@ -21,6 +21,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <stdio.h> /* for 'remove' */
 
 #include "ttx-http.h"
 #include "ttx-provider-mgr.h"
