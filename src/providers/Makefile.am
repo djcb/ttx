@@ -23,11 +23,13 @@ noinst_LTLIBRARIES=				\
 
 libproviders_la_SOURCES=			\
 	ttx-providers.h				\
-	ttx-provider-nos-nl.c			\
 	ttx-provider-een-be.c			\
+	ttx-provider-hrt-hr.c			\
+	ttx-provider-mtv3-fi.c			\
+	ttx-provider-nos-nl.c			\
 	ttx-provider-rai-it.c			\
-	ttx-provider-yle-fi.c			\
-	ttx-provider-mtv3-fi.c
+	ttx-provider-yle-fi.c
+
 
 libproviders_la_LIBADD=				\
 	${GLIB_LIBS}
