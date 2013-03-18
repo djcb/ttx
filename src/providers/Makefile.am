@@ -28,6 +28,7 @@ libproviders_la_SOURCES=			\
 	ttx-provider-mtv3-fi.c			\
 	ttx-provider-nos-nl.c			\
 	ttx-provider-rai-it.c			\
+	ttx-provider-rtvslo-si.c		\
 	ttx-provider-yle-fi.c
 
 

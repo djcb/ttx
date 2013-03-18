@@ -32,12 +32,13 @@
  *    to TTX_PROVIDERS
  */
 
-TTXProvider*	ttx_provider_nos_nl  (void);
-TTXProvider*	ttx_provider_een_be  (void);
-TTXProvider*	ttx_provider_yle_fi  (void);
-TTXProvider*	ttx_provider_mtv3_fi (void);
-TTXProvider*	ttx_provider_rai_it  (void);
-TTXProvider*	ttx_provider_hrt_hr  (void);
+TTXProvider*	ttx_provider_nos_nl     (void);
+TTXProvider*	ttx_provider_een_be     (void);
+TTXProvider*	ttx_provider_yle_fi     (void);
+TTXProvider*	ttx_provider_mtv3_fi    (void);
+TTXProvider*	ttx_provider_rai_it     (void);
+TTXProvider*	ttx_provider_rtvslo_si  (void);
+TTXProvider*	ttx_provider_hrt_hr     (void);
 
 typedef const char*  TTXProviderID;
 typedef TTXProvider* (*TTXProviderFunc) (void);
@@ -46,12 +47,13 @@ static const struct {
 	TTXProviderID     prov_id;
 	TTXProviderFunc   new_func;
 } TTX_PROVIDERS[] = {
-	{ "nos",        ttx_provider_nos_nl  },
-	{ "vrt",        ttx_provider_een_be  },
-	{ "rai",        ttx_provider_rai_it  },
-	{ "yle",        ttx_provider_yle_fi  },
-	{ "mtv3",       ttx_provider_mtv3_fi },
-	{ "hrt",        ttx_provider_hrt_hr  },
+	{ "nos",        ttx_provider_nos_nl    },
+	{ "vrt",        ttx_provider_een_be    },
+	{ "rai",        ttx_provider_rai_it    },
+	{ "yle",        ttx_provider_yle_fi    },
+	{ "mtv3",       ttx_provider_mtv3_fi   },
+	{ "hrt",        ttx_provider_hrt_hr    },
+	{ "rtvslo",     ttx_provider_rtvslo_si }
 
 };
 
