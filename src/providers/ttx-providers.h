@@ -23,7 +23,6 @@
 #include <ttx-provider.h>
 
 
-
 /**
  * A new provider has to add two things here:
  * 1) add a declaration of the function to create a TTXProvider*
@@ -38,8 +37,10 @@ TTXProvider*	ttx_provider_eins_de    (void);
 TTXProvider*	ttx_provider_yle_fi     (void);
 TTXProvider*	ttx_provider_mtv3_fi    (void);
 TTXProvider*	ttx_provider_rai_it     (void);
+TTXProvider*	ttx_provider_rtp_pt     (void);
 TTXProvider*	ttx_provider_rtvslo_si  (void);
 TTXProvider*	ttx_provider_hrt_hr     (void);
+
 
 typedef const char*  TTXProviderID;
 typedef TTXProvider* (*TTXProviderFunc) (void);
@@ -55,6 +56,7 @@ static const struct {
 	{ "yle",        ttx_provider_yle_fi    },
 	{ "mtv3",       ttx_provider_mtv3_fi   },
 	{ "hrt",        ttx_provider_hrt_hr    },
+	{ "rtp",        ttx_provider_rtp_pt    },
 	{ "rtvslo",     ttx_provider_rtvslo_si }
 
 };
