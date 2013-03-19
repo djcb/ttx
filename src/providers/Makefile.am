@@ -24,6 +24,7 @@ noinst_LTLIBRARIES=				\
 libproviders_la_SOURCES=			\
 	ttx-providers.h				\
 	ttx-provider-een-be.c			\
+	ttx-provider-eins-de.c			\
 	ttx-provider-hrt-hr.c			\
 	ttx-provider-mtv3-fi.c			\
 	ttx-provider-nos-nl.c			\

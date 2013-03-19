@@ -34,6 +34,7 @@
 
 TTXProvider*	ttx_provider_nos_nl     (void);
 TTXProvider*	ttx_provider_een_be     (void);
+TTXProvider*	ttx_provider_eins_de    (void);
 TTXProvider*	ttx_provider_yle_fi     (void);
 TTXProvider*	ttx_provider_mtv3_fi    (void);
 TTXProvider*	ttx_provider_rai_it     (void);
@@ -49,6 +50,7 @@ static const struct {
 } TTX_PROVIDERS[] = {
 	{ "nos",        ttx_provider_nos_nl    },
 	{ "vrt",        ttx_provider_een_be    },
+	{ "eins",       ttx_provider_eins_de   },
 	{ "rai",        ttx_provider_rai_it    },
 	{ "yle",        ttx_provider_yle_fi    },
 	{ "mtv3",       ttx_provider_mtv3_fi   },
