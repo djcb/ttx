@@ -28,6 +28,7 @@ libproviders_la_SOURCES=			\
 	ttx-provider-hrt-hr.c			\
 	ttx-provider-mtv3-fi.c			\
 	ttx-provider-nos-nl.c			\
+	ttx-provider-orf-at.c			\
 	ttx-provider-rai-it.c			\
 	ttx-provider-rtp-pt.c                   \
 	ttx-provider-rtvslo-si.c		\

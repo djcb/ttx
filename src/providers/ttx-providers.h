@@ -31,15 +31,17 @@
  *    to TTX_PROVIDERS
  */
 
-TTXProvider*	ttx_provider_nos_nl     (void);
 TTXProvider*	ttx_provider_een_be     (void);
 TTXProvider*	ttx_provider_eins_de    (void);
-TTXProvider*	ttx_provider_yle_fi     (void);
+TTXProvider*	ttx_provider_hrt_hr     (void);
 TTXProvider*	ttx_provider_mtv3_fi    (void);
+TTXProvider*	ttx_provider_nos_nl     (void);
+TTXProvider*	ttx_provider_orf_at     (void);
 TTXProvider*	ttx_provider_rai_it     (void);
 TTXProvider*	ttx_provider_rtp_pt     (void);
 TTXProvider*	ttx_provider_rtvslo_si  (void);
-TTXProvider*	ttx_provider_hrt_hr     (void);
+TTXProvider*	ttx_provider_yle_fi     (void);
+
 
 
 typedef const char*  TTXProviderID;
@@ -57,7 +59,8 @@ static const struct {
 	{ "mtv3",       ttx_provider_mtv3_fi   },
 	{ "hrt",        ttx_provider_hrt_hr    },
 	{ "rtp",        ttx_provider_rtp_pt    },
-	{ "rtvslo",     ttx_provider_rtvslo_si }
+	{ "rtvslo",     ttx_provider_rtvslo_si },
+	{ "orf",        ttx_provider_orf_at    },
 
 };
 
