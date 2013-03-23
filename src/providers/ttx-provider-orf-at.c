@@ -23,16 +23,12 @@
 #include "ttx-provider.h"
 #include "ttx-provider-type-2.h"
 
-
 /* map looks something like:
-   <map name="P100_01">
-   <area shape="rect" coords="80,-12,110,0" href="http://abc/P100_01.html"/>
-   <area shape="rect" coords="230,36,260,48" href="http://abc/P199_01.html"/>
-   ...
-   </map>
-
-*/
-
+ *
+ * <area shape="rect" coords="432,308,467,322" href="122_0001.htm"
+ *  alt="122_0001.htm"></map>
+ *
+ */
 
 static gboolean
 retrieve (unsigned page, unsigned subpage,
@@ -53,6 +49,6 @@ TTXProvider*
 ttx_provider_orf_at (void)
 {
 	return ttx_provider_new ("ORF Teletext",
-				 _("Austrian Teletekst Service"),
+				 _("Austrian Teletext Service"),
 				 retrieve);
 }
