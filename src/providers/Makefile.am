@@ -23,6 +23,7 @@ noinst_LTLIBRARIES=				\
 
 libproviders_la_SOURCES=			\
 	ttx-providers.h				\
+	ttx-provider-ceefax-uk.c		\
 	ttx-provider-een-be.c			\
 	ttx-provider-eins-de.c			\
 	ttx-provider-hrt-hr.c			\
@@ -33,7 +34,6 @@ libproviders_la_SOURCES=			\
 	ttx-provider-rtp-pt.c                   \
 	ttx-provider-rtvslo-si.c		\
 	ttx-provider-yle-fi.c
-
 
 libproviders_la_LIBADD=				\
 	${GLIB_LIBS}

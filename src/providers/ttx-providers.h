@@ -31,6 +31,7 @@
  *    to TTX_PROVIDERS
  */
 
+TTXProvider*	ttx_provider_ceefax_uk  (void);
 TTXProvider*	ttx_provider_een_be     (void);
 TTXProvider*	ttx_provider_eins_de    (void);
 TTXProvider*	ttx_provider_hrt_hr     (void);
@@ -51,6 +52,8 @@ static const struct {
 	TTXProviderID     prov_id;
 	TTXProviderFunc   new_func;
 } TTX_PROVIDERS[] = {
+	/* for now, disable Ceefax */
+	/* { "cfx",        ttx_provider_ceefax_uk }, */
 	{ "nos",        ttx_provider_nos_nl    },
 	{ "vrt",        ttx_provider_een_be    },
 	{ "eins",       ttx_provider_eins_de   },
