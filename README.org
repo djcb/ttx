@@ -9,10 +9,16 @@
    TTB only supported the Dutch Teletekst system, but TTX aims to support other
    Teletekst providers as well. Currently supported:
 
-   - NOS Teletekst (Dutch)
+   - Eins (German)
    - Eén Teletekst (Belgian, Dutch)
-   - YLE (Finnish)
+   - HRT (Croatian)
+   - MTV3 (Finnish)
+   - NOS Teletekst (Dutch)
+   - ORF (Austrian)
    - RAI Televideo (Italian)
+   - RTP (Portuguese)
+   - RTV (Slovenian)
+   - YLE (Finnish)
 
    TTX is designed to make it easy to add other providers, esp. when they are
    mere variations of providers which are already supported. See
