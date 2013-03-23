@@ -8,4 +8,11 @@ src/providers/ttx-provider-nos-nl.c
 src/providers/ttx-provider-een-be.c
 src/providers/ttx-provider-yle-fi.c
 src/providers/ttx-provider-rai-it.c
+src/providers/ttx-provider-ceefax-uk.c
+src/providers/ttx-provider-eins-de.c
+src/providers/ttx-provider-hrt-hr.c
+src/providers/ttx-provider-mtv3-fi.c
+src/providers/ttx-provider-orf-at.c
+src/providers/ttx-provider-rtp-pt.c
+src/providers/ttx-provider-rtvslo-si.c
 src/ttx-provider-mgr.c

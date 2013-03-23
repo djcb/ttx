@@ -36,7 +36,7 @@ msgstr ""
 
 #: ../src/ttx.c:224
 msgid "ttx teletext browser, version "
-msgstr "ttx  teletekst browser, versie "
+msgstr "ttx teletekst browser, versie "
 
 #: ../src/ttx.c:297
 msgid "an error occurred"
@@ -67,9 +67,34 @@ msgid "Flemish Teletekst Service"
 msgstr "Vlaamse Teletekst"
 
 #: ../src/providers/ttx-provider-yle-fi.c:57
+#: ../src/providers/ttx-provider-mtv3-fi.c:56
 msgid "Finnish Teletekst Service"
 msgstr "Finse Teletekst"
 
 #: ../src/providers/ttx-provider-rai-it.c:81
 msgid "Italian Teletekst Service"
 msgstr "Italiaanse teletekst"
+
+#: ../src/providers/ttx-provider-ceefax-uk.c:72
+msgid "British Teletext Service"
+msgstr "Britse teletekst"
+
+#: ../src/providers/ttx-provider-eins-de.c:56
+msgid "German Teletekst Service"
+msgstr "Duitse teletekst"
+
+#: ../src/providers/ttx-provider-hrt-hr.c:57
+msgid "Croation Teletekst Service"
+msgstr "Kroatische teletekst"
+
+#: ../src/providers/ttx-provider-orf-at.c:52
+msgid "Austrian Teletext Service"
+msgstr "Oostenrijkse teletekst"
+
+#: ../src/providers/ttx-provider-rtp-pt.c:59
+msgid "Portuguese Teletekst Service"
+msgstr "Portugese teletekst"
+
+#: ../src/providers/ttx-provider-rtvslo-si.c:55
+msgid "Slovenian Teletekst Service"
+msgstr "Sloveense teletekst"
