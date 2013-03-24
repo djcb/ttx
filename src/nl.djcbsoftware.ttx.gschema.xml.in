@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+    <schema path="/nl/djcbsoftware/ttx/" id="nl.djcbsoftware.ttx" gettext-domain="ttx">
+        <key name="window-position" type="ai">
+            <default>[]</default>
+            <_summary>Window position</_summary>
+            <_description>Window position (x and y).</_description>
+        </key>
+	<key name="provider-id" type="s">
+          <default>"nos"</default>
+          <_summary>Teletext Provider</_summary>
+          <_description>A short string identifying the teletext provider</_description>
+	  <choices>
+	    <choice value="eins"/>
+	    <choice value="hrt"/>
+	    <choice value="mtv3"/>
+	    <choice value="nos"/>
+	    <choice value="orf"/>
+	    <choice value="rai"/>
+	    <choice value="rtp"/>
+	    <choice value="rtve"/>
+	    <choice value="rtvslo"/>
+	    <choice value="vrt"/>
+	    <choice value="yle"/>
+	  </choices>
+	</key>
+    </schema>
+</schemalist>

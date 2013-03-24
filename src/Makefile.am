@@ -57,3 +57,18 @@ ttx_LDADD=					\
 	$(LIBXML_LIBS)				\
 	$(GIO_LIBS)				\
 	providers/libproviders.la
+
+
+gsettingsschema_in_files = nl.djcbsoftware.ttx.gschema.xml.in
+gsettings_SCHEMAS = $(gsettingsschema_in_files:.xml.in=.xml)
+.PRECIOUS: $(gsettings_SCHEMAS)
+
+@INTLTOOL_XML_NOMERGE_RULE@
+
+@GSETTINGS_RULES@
+
+EXTRA_DIST=					\
+	$(gsettingsschema_in_files)
+
+CLEANFILES=					\
+	$(gsettings_SCHEMAS)

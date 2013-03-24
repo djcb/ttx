@@ -14,6 +14,7 @@
 ## along with this program; if not, write to the Free Software Foundation,
 ## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
+AC_PREREQ([2.67])
 AC_INIT([ttx],[0.0.2],[],[ttx])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([src/ttx.c])
@@ -59,13 +60,15 @@ AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE], ["${GETTEXT_PACKAGE}"], [gettext domain])
 AC_SUBST(TTX_LOCALEDIR,[${datadir}/locale])
 ####################################################################
 
+AC_DEFINE_UNQUOTED([TTX_APP_ID], ["nl.djcbsoftware.ttx"], [application-id])
 
 # glib2?
-# we need 2.14 at least, because we use GRegex
 PKG_CHECK_MODULES(GLIB,glib-2.0 >= 2.30 gobject-2.0)
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 glib_version="`$PKG_CONFIG --modversion glib-2.0`"
+
+GLIB_GSETTINGS
 
 PKG_CHECK_MODULES(GIO,gio-2.0 gio-unix-2.0)
 AC_SUBST(GIO_CFLAGS)
