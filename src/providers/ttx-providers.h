@@ -40,6 +40,7 @@ TTXProvider*	ttx_provider_nos_nl     (void);
 TTXProvider*	ttx_provider_orf_at     (void);
 TTXProvider*	ttx_provider_rai_it     (void);
 TTXProvider*	ttx_provider_rtp_pt     (void);
+TTXProvider*	ttx_provider_rtve_es    (void);
 TTXProvider*	ttx_provider_rtvslo_si  (void);
 TTXProvider*	ttx_provider_yle_fi     (void);
 
@@ -61,6 +62,7 @@ static const struct {
 	{ "yle",        ttx_provider_yle_fi    },
 	{ "mtv3",       ttx_provider_mtv3_fi   },
 	{ "hrt",        ttx_provider_hrt_hr    },
+	{ "rtve",       ttx_provider_rtve_es   },
 	{ "rtp",        ttx_provider_rtp_pt    },
 	{ "rtvslo",     ttx_provider_rtvslo_si },
 	{ "orf",        ttx_provider_orf_at    },

@@ -32,6 +32,7 @@ libproviders_la_SOURCES=			\
 	ttx-provider-orf-at.c			\
 	ttx-provider-rai-it.c			\
 	ttx-provider-rtp-pt.c                   \
+	ttx-provider-rtve-es.c                  \
 	ttx-provider-rtvslo-si.c		\
 	ttx-provider-yle-fi.c
 

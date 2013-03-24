@@ -73,14 +73,14 @@ process_map (const char *map, const char *href_rx,
 			g_free (str);
 		}
 
-		/* some providers (e.g RAI) don't use subpages; we
+		/* some providers don't use subpages; we
 		 * just us a pseudo subpage 1 */
 		if (nums[5] == 0)
 			nums[5] = 1;
 
 		link = ttx_link_new (nums[0], nums[2],nums[1], nums[3],
 				     nums[4], nums[5]);
-		/* for some providers, the coordinates require
+		/* for some providers (RAI), the coordinates require
 		 * massaging */
 		if (remap_func)
 			remap_func (link);
