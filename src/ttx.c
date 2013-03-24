@@ -37,7 +37,6 @@ struct _Opts {
 	unsigned	  subpage;
 	char		 *prov_id;
 	char		**params;
-
 };
 typedef struct _Opts Opts;
 
@@ -74,10 +73,18 @@ on_key_press_event (GtkWidget *w, GdkEventKey *event_key, TTXWindow *ttx)
 }
 
 
-static void
-start_gui (TTXProviderMgr *prov_mgr, Opts *opts)
+static gboolean
+setup_gui (TTXProviderMgr *prov_mgr, Opts *opts)
 {
 	GtkWidget *win;
+	GSettings *settings;
+
+	settings = g_settings_new (TTX_APP_ID);
+	if (!settings) {
+		g_warning ("settings not found; please install them");
+		return FALSE;
+	}
+	g_object_unref (settings); /* just testing...*/
 
 	win = ttx_window_new (prov_mgr);
 
@@ -89,16 +96,11 @@ start_gui (TTXProviderMgr *prov_mgr, Opts *opts)
 
 	gtk_widget_show (win);
 
-	if (opts->prov_id)
-		ttx_window_request_page (TTX_WINDOW(win),
-					 opts->prov_id,
-					 opts->page,
-					 opts->subpage);
-	else
-		ttx_window_request_page (TTX_WINDOW(win),
-					 "nos", 100, 1);
-
-	gtk_main ();
+	ttx_window_request_page (TTX_WINDOW(win),
+				 opts->prov_id,	/* NULL means 'last one' */
+				 opts->page    ? opts->page : 100,
+				 opts->subpage ? opts->subpage : 1);
+	return TRUE;
 }
 
 
@@ -268,8 +270,9 @@ main (int argc, char *argv[])
 
 	if (!setup_l10n ())
 		return 1;
-	rv  = 1;
-	err = NULL;
+
+	rv	 = 1;
+	err	 = NULL;
 
 	prov_mgr = ttx_provider_mgr_new ();
 
@@ -285,9 +288,13 @@ main (int argc, char *argv[])
 		goto leave;
 
 	gtk_init (&argc, &argv);
-	start_gui (prov_mgr, &opts); /* blocks */
 
+	if (!setup_gui (prov_mgr, &opts))
+		goto leave;
+
+	gtk_main ();
 	rv = 0;
+
 leave:
 	free_opts (&opts);
 
@@ -297,7 +304,6 @@ leave:
 			    _("an error occurred"));
 		g_clear_error (&err);
 	}
-
 
 	return rv;
 }

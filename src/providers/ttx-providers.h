@@ -55,17 +55,17 @@ static const struct {
 } TTX_PROVIDERS[] = {
 	/* for now, disable Ceefax */
 	/* { "cfx",        ttx_provider_ceefax_uk }, */
-	{ "nos",        ttx_provider_nos_nl    },
-	{ "vrt",        ttx_provider_een_be    },
 	{ "eins",       ttx_provider_eins_de   },
-	{ "rai",        ttx_provider_rai_it    },
-	{ "yle",        ttx_provider_yle_fi    },
-	{ "mtv3",       ttx_provider_mtv3_fi   },
 	{ "hrt",        ttx_provider_hrt_hr    },
-	{ "rtve",       ttx_provider_rtve_es   },
-	{ "rtp",        ttx_provider_rtp_pt    },
-	{ "rtvslo",     ttx_provider_rtvslo_si },
+	{ "mtv3",       ttx_provider_mtv3_fi   },
+	{ "nos",        ttx_provider_nos_nl    },
 	{ "orf",        ttx_provider_orf_at    },
+	{ "rai",        ttx_provider_rai_it    },
+	{ "rtp",        ttx_provider_rtp_pt    },
+	{ "rtve",       ttx_provider_rtve_es   },
+	{ "rtvslo",     ttx_provider_rtvslo_si },
+	{ "vrt",        ttx_provider_een_be    },
+	{ "yle",        ttx_provider_yle_fi    },
 
 };
 
