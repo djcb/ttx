@@ -54,7 +54,9 @@ struct _TTXWindowPrivate {
 	GtkWidget	*page_entry, *subpage_entry;
 	GtkWidget       *combo;
 
-	unsigned	 page, subpage;
+	unsigned	page, subpage;
+
+	GSettings       *settings;
 	GSList		*links;
 
 	TTXProviderMgr  *prov_mgr;
@@ -62,8 +64,28 @@ struct _TTXWindowPrivate {
 
 	char	        *img_file;
 
-	gboolean        retrieving;
+	gboolean	 retrieving;
+	char		*prov_id;
 };
+
+
+static const char*
+get_provider_id (TTXWindow *self)
+{
+	g_free (self->priv->prov_id);
+
+	return self->priv->prov_id =
+		g_settings_get_string (self->priv->settings,
+				       "provider-id");
+}
+
+static void
+set_provider_id (TTXWindow *self, const char *prov_id)
+{
+	g_settings_set_string (self->priv->settings,
+			       "provider-id", prov_id);
+}
+
 
 #define TTX_WINDOW_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
                                         TTX_TYPE_WINDOW, \
@@ -215,7 +237,7 @@ on_completed (TTXRetrievalStatus status,
 
 	add_links (self, links);
 
-	self->priv->page    = page;
+	self->priv->page = page;
 	self->priv->subpage = subpage;
 
 	update_entry (self);
@@ -331,6 +353,8 @@ on_combo_changed (GtkComboBox *combo, TTXWindow *self)
 		return;
 
 	prov_id = gtk_combo_box_get_active_id (combo);
+	set_provider_id (self, prov_id);
+
 	ttx_window_request_page (self, prov_id, 100, 1);
 }
 
@@ -594,15 +618,18 @@ ttx_window_init (TTXWindow *self)
 {
 	self->priv = TTX_WINDOW_GET_PRIVATE(self);
 
-	self->priv->page	= 100;
-	self->priv->subpage	= 1;
+	self->priv->prov_id     = NULL;
 	self->priv->on_link	= FALSE;
 	self->priv->img_file    = NULL;
+
+	self->priv->settings    = g_settings_new (TTX_APP_ID);
 
 	gtk_window_set_title (GTK_WINDOW(self), _("TTX Teletext Browser"));
 	gtk_window_set_resizable (GTK_WINDOW(self), FALSE);
 
 	gtk_window_set_icon_name (GTK_WINDOW(self), "ttx");
+
+
 }
 
 static void
@@ -614,6 +641,11 @@ ttx_window_finalize (GObject *obj)
 
 	free_links (self);
 	reset_img_file (self, NULL);
+
+	if (self->priv->settings)
+		g_object_unref (self->priv->settings);
+
+	g_free (self->priv->prov_id);
 
 	G_OBJECT_CLASS(parent_class)->finalize (G_OBJECT(self));
 }
@@ -651,12 +683,15 @@ ttx_window_request_page (TTXWindow *self,
 	g_return_if_fail (TTX_IS_WINDOW(self));
 	g_return_if_fail (page >= 100 && page <= 999);
 	g_return_if_fail (subpage > 0);
-	g_return_if_fail (prov_id);
 
 	if (page > 999 || subpage < 1) {
 		g_warning ("invalid page %u/%u", page, subpage);
 		update_entry (self);
-			}
+	}
+
+	/* if not provided, get the last one (or the default) */
+	if (!prov_id)
+		prov_id = get_provider_id (self);
 
 	combo	 = GTK_COMBO_BOX(self->priv->combo);
 	combo_id = gtk_combo_box_get_active_id (combo);

@@ -81,6 +81,7 @@ GtkWidget *ttx_window_new  (TTXProviderMgr *prov_mgr) G_GNUC_WARN_UNUSED_RESULT;
 void ttx_window_request_page (TTXWindow *self, TTXProviderID prov_id,
 			      unsigned page, unsigned subpage);
 
+
 /**
  * set the image shown in the ttxwindow to some file
  *
