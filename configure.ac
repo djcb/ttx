@@ -38,6 +38,7 @@ AC_HEADER_STDC
 LT_INIT
 
 AC_CHECK_FUNCS([strcasestr])
+AC_CHECK_LIB([m],[floor])
 
 # require pkg-config
 AC_PATH_PROG([PKG_CONFIG], [pkg-config], [no])
