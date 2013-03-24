@@ -61,6 +61,8 @@ struct _TTXWindowPrivate {
 	gboolean	on_link;
 
 	char	        *img_file;
+
+	gboolean        retrieving;
 };
 
 #define TTX_WINDOW_GET_PRIVATE(o)      (G_TYPE_INSTANCE_GET_PRIVATE((o), \
@@ -217,6 +219,7 @@ on_completed (TTXRetrievalStatus status,
 	self->priv->subpage = subpage;
 
 	update_entry (self);
+	self->priv->retrieving = FALSE; /* we're done */
 }
 
 
@@ -319,7 +322,16 @@ typedef enum {
 static void
 on_combo_changed (GtkComboBox *combo, TTXWindow *self)
 {
-	ttx_window_request_page (self, NULL, 100, 1);
+	const char *prov_id;
+
+	/* update page if we weren't already retrieving;
+	 * this distinguishes between user changing combo
+	 * and ttx_window_request_page */
+	if (self->priv->retrieving)
+		return;
+
+	prov_id = gtk_combo_box_get_active_id (combo);
+	ttx_window_request_page (self, prov_id, 100, 1);
 }
 
 static void
@@ -442,9 +454,13 @@ static gboolean
 on_button_press_event (GtkWidget *w, GdkEvent *event, TTXWindow *self)
 {
 	unsigned page, subpage;
+	const char *prov_id;
+
+	prov_id = gtk_combo_box_get_active_id (
+		GTK_COMBO_BOX(self->priv->combo));
 
 	if (pointer_on_link (self, w, event, &page, &subpage))
-		ttx_window_request_page (self, NULL, page, subpage);
+		ttx_window_request_page (self, prov_id, page, subpage);
 
 	return TRUE;
 }
@@ -635,25 +651,25 @@ ttx_window_request_page (TTXWindow *self,
 	g_return_if_fail (TTX_IS_WINDOW(self));
 	g_return_if_fail (page >= 100 && page <= 999);
 	g_return_if_fail (subpage > 0);
+	g_return_if_fail (prov_id);
 
 	if (page > 999 || subpage < 1) {
 		g_warning ("invalid page %u/%u", page, subpage);
 		update_entry (self);
-		return;
-	}
+			}
 
 	combo	 = GTK_COMBO_BOX(self->priv->combo);
 	combo_id = gtk_combo_box_get_active_id (combo);
 
-	if (prov_id && g_strcmp0 (prov_id, combo_id) != 0) {
+	self->priv->retrieving = TRUE;
+
+	if (g_strcmp0 (prov_id, combo_id) != 0)
 		if (!gtk_combo_box_set_active_id (combo, prov_id))
 			g_warning ("failed to set active id to %s", prov_id);
-		return;
-	}
 
 	ttx_provider_mgr_retrieve
 		(self->priv->prov_mgr,
-		 combo_id,
+		 prov_id,
 		 page, subpage,
 		 (TTXProviderResultFunc)on_completed,
 		 self);
