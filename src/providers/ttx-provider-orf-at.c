@@ -19,6 +19,7 @@
 
 #include <config.h>
 #include <glib/gi18n-lib.h>
+#include <math.h>
 
 #include "ttx-provider.h"
 #include "ttx-provider-type-2.h"
@@ -35,13 +36,26 @@ retrieve (unsigned page, unsigned subpage,
 	  const char *dir, TTXProviderResultFunc func,
 	  gpointer user_data)
 {
-	return ttx_provider_type_2_retrieve
-		(page, subpage,
-		 "http://teletext.orf.at/100/%u_%04u.png",
-		 "http://teletext.orf.at/100/%u_%04u.htm",
-		 "(\\d{3})_(\\d{4})\\.htm.*>",
-		 dir, NULL,
-		 func, user_data);
+	char *html, *img;
+	gboolean rv;
+	guint page100;
+
+	page100 = 100 * (floor (page / 100.0));
+
+
+	img = g_strdup_printf ("http://teletext.orf.at/%u/%%u_%%04u.png",
+				page100);
+	html = g_strdup_printf ("http://teletext.orf.at/%u/%%u_%%04u.htm",
+				page100);
+
+	rv = ttx_provider_type_2_retrieve(page, subpage, img, html,
+					  "(\\d{3})_(\\d{4})\\.htm.*>",
+					  dir, NULL,
+					  func, user_data);
+	g_free (html);
+	g_free (img);
+
+	return rv;
 }
 
 
