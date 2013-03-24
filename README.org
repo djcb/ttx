@@ -17,6 +17,7 @@
    - ORF (Austrian)
    - RAI Televideo (Italian)
    - RTP (Portuguese)
+   - RTVE (Spanish)
    - RTV (Slovenian)
    - YLE (Finnish)
 
