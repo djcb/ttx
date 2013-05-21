@@ -15,7 +15,7 @@
 ## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 AC_PREREQ([2.67])
-AC_INIT([ttx],[0.0.2],[],[ttx])
+AC_INIT([ttx],[0.0.3],[],[ttx])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([src/ttx.c])
 AC_CONFIG_MACRO_DIR([m4])
@@ -115,3 +115,6 @@ echo "LibXML2 version                      : $libxml_version"
 echo "------------------------------------------------"
 echo
 echo "Now, type 'make' to build ttx"
+echo
+echo "*** Note: you need to install it before you can run it,"
+echo "*** due to GSettings"

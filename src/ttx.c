@@ -68,7 +68,6 @@ on_key_press_event (GtkWidget *w, GdkEventKey *event_key, TTXWindow *ttx)
 	default:
 		break;
 	}
-
 	return FALSE;
 }
 
