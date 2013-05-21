@@ -15,4 +15,6 @@ src/providers/ttx-provider-mtv3-fi.c
 src/providers/ttx-provider-orf-at.c
 src/providers/ttx-provider-rtp-pt.c
 src/providers/ttx-provider-rtvslo-si.c
+src/providers/ttx-provider-rtve-es.c
 src/ttx-provider-mgr.c
+src/nl.djcbsoftware.ttx.gschema.xml.in
