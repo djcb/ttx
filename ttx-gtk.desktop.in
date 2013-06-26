@@ -2,10 +2,10 @@
 Encoding=UTF-8
 Name=TTX
 Comment=Application for viewing Teletext on your desktop
-Exec=ttx
-Icon=ttx
+Exec=ttx-gtk
+Icon=ttx-gtk
 Terminal=false
-TryExec=ttx
+TryExec=ttx-gtk
 StartupNotify=true
 Type=Application
 Categories=GNOME;GTK;Network

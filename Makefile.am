@@ -16,14 +16,14 @@
 
 SUBDIRS= po src
 
-desktop_in_files=ttx.desktop.in
+desktop_in_files=ttx-gtk.desktop.in
 desktopdir=$(datadir)/applications
 desktop_DATA= $(desktop_in_files:.desktop.in=.desktop)
 
 icondir=$(datadir)/icons/hicolor/48x48/apps
-icon_DATA=ttx.png
+icon_DATA=ttx-gtk.png
 
-EXTRA_DIST= ttx.desktop.in ttx.png
+EXTRA_DIST= ttx-gtk.desktop.in ttx-gtk.png
 ACLOCAL_AMFLAGS = -I m4
 
 

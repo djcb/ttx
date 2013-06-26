@@ -102,7 +102,7 @@ po/Makefile.in
 Makefile
 src/Makefile
 src/providers/Makefile
-ttx.desktop])
+ttx-gtk.desktop])
 AC_OUTPUT
 
 echo

@@ -2,7 +2,7 @@
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## t	he Free Software Foundation; either version 3 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -27,9 +27,9 @@ AM_CPPFLAGS=-I${top_srcdir} $(GLIB_CFLAGS) $(GTK_CFLAGS)		\
 AM_CFLAGS=-Wall -Wextra -Wno-unused-parameter -Wdeclaration-after-statement
 
 bin_PROGRAMS=					\
-	ttx
+	ttx-gtk
 
-ttx_SOURCES=					\
+ttx_gtk_SOURCES=				\
 	ttx.c					\
 	ttx-http.c				\
 	ttx-http.h				\
@@ -49,7 +49,7 @@ ttx_SOURCES=					\
 	ttx-provider-type-2.h
 
 
-ttx_LDADD=					\
+ttx_gtk_LDADD=					\
 	${GLIB_LIBS}				\
 	${GTK_LIBS}				\
 	$(GDK_PIXBUF_LIBS)			\
@@ -57,7 +57,6 @@ ttx_LDADD=					\
 	$(LIBXML_LIBS)				\
 	$(GIO_LIBS)				\
 	providers/libproviders.la
-
 
 gsettingsschema_in_files = nl.djcbsoftware.ttx.gschema.xml.in
 gsettings_SCHEMAS = $(gsettingsschema_in_files:.xml.in=.xml)
