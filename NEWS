@@ -1,3 +1,10 @@
 * NEWS
 
+  0.0.3 (2013-07-13)
+  - renamed binary to ttx-gtk as to not conflict with fonttools
+  - added support for rtve (Spain)
+  - us GSettings to remember settings
+  - some internal cleanups
+
+
   2013-02-06: initial githumb import
