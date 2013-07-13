@@ -18,8 +18,6 @@ AC_PREREQ([2.67])
 AC_INIT([ttx],[0.0.3],[],[ttx])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([src/ttx.c])
-
-
 AC_CONFIG_MACRO_DIR([m4])
 
 # libtoolize wants to put some stuff in here; if you have an old
@@ -109,7 +107,7 @@ echo
 echo "ttx $VERSION configuration is complete."
 echo "------------------------------------------------"
 echo "GLib version                         : $glib_version"
-echo "GLib version                         : $gio_version"
+echo "Gio version                          : $gio_version"
 echo "GTK+ version                         : $gtk_version"
 echo "GDK-Pixbuf version                   : $gdk_pixbuf_version"
 echo "Soup version                         : $libsoup_version"
