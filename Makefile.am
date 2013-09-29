@@ -23,7 +23,7 @@ desktop_DATA= $(desktop_in_files:.desktop.in=.desktop)
 icondir=$(datadir)/icons/hicolor/48x48/apps
 icon_DATA=ttx-gtk.png
 
-EXTRA_DIST= ttx-gtk.desktop.in ttx-gtk.png
+EXTRA_DIST= ttx-gtk.desktop.in ttx-gtk.png autogen.sh
 ACLOCAL_AMFLAGS = -I m4
 
 
