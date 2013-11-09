@@ -401,16 +401,27 @@ get_provider_combo (TTXWindow *self)
 }
 
 
+static GtkToolItem*
+tool_button (const char *name)
+{
+	GtkWidget *icon;
+
+	icon = gtk_image_new_from_icon_name
+		(name, GTK_ICON_SIZE_SMALL_TOOLBAR);
+	
+	return gtk_menu_tool_button_new (icon, NULL);
+}
+
 
 static GtkWidget*
 get_toolbar (TTXWindow *self)
 {
-	GtkWidget *toolbox;
-	GtkToolItem *btn;
-
+	GtkWidget	*toolbox;
+	GtkToolItem	*btn;
+	
 	toolbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+	btn = tool_button ("go-previous");
 
-	btn = gtk_tool_button_new_from_stock (GTK_STOCK_GO_BACK);
 	g_object_set_data (G_OBJECT(btn), BUTTON_ID,
 			   GSIZE_TO_POINTER(BUTTON_PREV));
 	g_signal_connect (btn, "clicked", G_CALLBACK(on_clicked), self);
@@ -421,7 +432,7 @@ get_toolbar (TTXWindow *self)
 	gtk_box_pack_start (GTK_BOX (toolbox), get_entry_box(self),
 			    FALSE, FALSE, 0);
 
-	btn = gtk_tool_button_new_from_stock (GTK_STOCK_GO_FORWARD);
+	btn = tool_button ("go-next");
 	g_object_set_data (G_OBJECT(btn), BUTTON_ID,
 			   GSIZE_TO_POINTER(BUTTON_NEXT));
 	g_signal_connect (btn, "clicked", G_CALLBACK(on_clicked), self);
@@ -429,7 +440,7 @@ get_toolbar (TTXWindow *self)
 	gtk_box_pack_start (GTK_BOX (toolbox), GTK_WIDGET(btn),
 			    FALSE, FALSE, 0);
 
-	btn = gtk_tool_button_new_from_stock (GTK_STOCK_REFRESH);
+	btn = tool_button ("view-refresh");
 	g_object_set_data (G_OBJECT(btn), BUTTON_ID,
 			   GSIZE_TO_POINTER(BUTTON_REFRESH));
 	g_signal_connect (btn, "clicked", G_CALLBACK(on_clicked), self);
