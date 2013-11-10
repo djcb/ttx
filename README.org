@@ -1,8 +1,8 @@
 * TTX
 
-  The successor to the TTB Teletekst browser which broke due to some recent
-  changes in the Teletekst website. TTB was in Python, but TTX is written in C.
-  TTX is very young, but the basics work.
+  The successor to the TTB Teletekst browser which broke due to some changes in
+  the Teletekst website. TTB was in Python, but TTX is written in C.  TTX is
+  very young, but the basics work.
 
 ** providers
 
@@ -33,6 +33,9 @@
    - gtk+ 3.x
    - libsoup 2.4
    - libxml2
+
+   (and for (re)building you'll the typically tools – gcc or clang and friends,
+   autotools, libtool, pkg-config.
 
 ** download
 
