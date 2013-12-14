@@ -17,6 +17,8 @@
 **
 */
 
+#include <config.h>
+
 #include <libsoup/soup.h>
 #include <errno.h>
 #include <string.h>
@@ -28,91 +30,109 @@ struct _CBData {
 	TTXHTTPCompletedFunc	 func;
 	gpointer		 user_data;
 	char			*path;
+	GFile                   *file;
+        GFileOutputStream       *ostream;
+        GInputStream            *istream;
 };
 typedef struct _CBData CBData;
 
 static void
 free_cbdata (CBData *cbdata)
 {
+	g_clear_object (&cbdata->file);
+	g_clear_object (&cbdata->istream);
+	g_clear_object (&cbdata->ostream);
+
 	g_free (cbdata->path);
+
 	g_free (cbdata);
 }
 
-static gboolean
-save_message (SoupMessage *msg, const char *path)
+static void
+on_spliced (GOutputStream *ostream, GAsyncResult *res, CBData *cbdata)
 {
-	FILE *file;
-	SoupBuffer *buf;
-	size_t written;
-	gboolean rv;
-	SoupMessageBody *body;
-
-	file = fopen (path, "w");
-	if (!file) {
-		g_warning ("failed to open %s for writing: %s",
-			   path, strerror (errno));
-		return FALSE;
-	}
-
-	g_object_get (G_OBJECT(msg), "response-body", &body, NULL);
-	buf = soup_message_body_flatten (body);
-
-	written	= fwrite (buf->data, buf->length, 1, file);
-	if (written != 1) {
-		g_warning ("error writing %s: %s", path,
-			   strerror (errno));
-		rv = FALSE;
+        GError          *err;
+        gboolean         rv;
+        
+        err = NULL;
+        rv = g_output_stream_splice_finish (ostream, res, &err);
+        if (!rv) {
+		g_warning ("download: %s", err ? err->message:
+			   "something went wrong");
+		cbdata->func (TTX_HTTP_STATUS_ERROR, NULL,
+			      cbdata->user_data);
 	} else
-		rv = TRUE;
+		cbdata->func (TTX_HTTP_STATUS_COMPLETED,
+			      cbdata->path, cbdata->user_data);	
+		
+	 free_cbdata (cbdata);
+}	
+ 
 
-	soup_buffer_free (buf);
-	soup_message_body_free (body);
-
-	fclose (file);
-
-	return rv;
-}
 
 
 static void
-on_session (SoupSession *session, SoupMessage *msg, CBData *cbdata)
+on_session (SoupSession *session, GAsyncResult *res, CBData *cbdata)
 {
-	if (msg->status_code != SOUP_STATUS_OK) {
-		char *uristr;
-		uristr = soup_uri_to_string
-			(soup_message_get_uri (msg), FALSE);
-		g_warning ("retrieving %s failed: %s",
-			   uristr,
-			   msg->reason_phrase ? msg->reason_phrase :
-			   "something went wrong");
-		g_free (uristr);
-		cbdata->func (TTX_HTTP_STATUS_ERROR, NULL,
-			      cbdata->user_data);
-		return;
-	}
+	GError *err;
 
-	if (!save_message (msg, cbdata->path))
-		cbdata->func (TTX_HTTP_STATUS_ERROR, NULL,
-			      cbdata->user_data);
+	err = NULL;
 
-	cbdata->func (TTX_HTTP_STATUS_COMPLETED, cbdata->path,
-		      cbdata->user_data);
+	cbdata->istream = soup_session_send_finish (session, res, &err);
+        if (!cbdata->istream)
+                goto errexit;
+
+        cbdata->file	= g_file_new_for_path (cbdata->path);
+	/* fails if file does not exist, that's fine */
+	unlink (cbdata->path); 
+        cbdata->ostream = g_file_create (cbdata->file,
+					 G_FILE_CREATE_REPLACE_DESTINATION |
+					 G_FILE_CREATE_PRIVATE, NULL, &err);
+        if (!cbdata->ostream)
+                goto errexit;
+	
+	 g_output_stream_splice_async (G_OUTPUT_STREAM(cbdata->ostream),
+				       cbdata->istream,
+				       G_OUTPUT_STREAM_SPLICE_CLOSE_SOURCE |
+				       G_OUTPUT_STREAM_SPLICE_CLOSE_TARGET,
+				       G_PRIORITY_DEFAULT, NULL,
+				       (GAsyncReadyCallback)on_spliced,
+				       cbdata);
+	 return;
+
+errexit:
+	g_warning ("creating i/o streams failed: %s",
+		  err ? err->message : "something went wrong");
+	g_clear_error (&err);
+	cbdata->func (TTX_HTTP_STATUS_ERROR, NULL,
+		       cbdata->user_data);
+	free_cbdata (cbdata);
 }
 
 void
 ttx_http_retrieve (const char *uri, const char *local_path,
 		   TTXHTTPCompletedFunc func, gpointer user_data)
 {
-	SoupMessage *msg;
-	SoupSession *session;
-	CBData *cbdata;
+	SoupMessage	*msg;
+	SoupMessageBody *mbody;
+	SoupSession	*session;
+	CBData		*cbdata;
 
 	g_return_if_fail (uri);
 	g_return_if_fail (local_path);
 	g_return_if_fail (func);
 
 	msg	= soup_message_new ("GET", uri);
-	session = soup_session_async_new ();
+	g_object_get (G_OBJECT(msg), "response-body", &mbody, NULL);
+
+        soup_message_body_set_accumulate (mbody, FALSE);
+        soup_message_body_free (mbody);
+
+
+	session = soup_session_new_with_options (
+		"timeout", 8, 
+		"user-agent", PACKAGE_NAME "/" PACKAGE_VERSION,
+		NULL);
 
 	cbdata		  = g_new0 (CBData, 1);
 
@@ -124,7 +144,8 @@ ttx_http_retrieve (const char *uri, const char *local_path,
 	g_object_set_data_full (G_OBJECT(msg), "cbdata", cbdata,
 				(GDestroyNotify)free_cbdata);
 
-	soup_session_queue_message (session, msg,
-				    (SoupSessionCallback)on_session,
-				    cbdata);
+	soup_session_send_async (session, msg, NULL,
+				 (GAsyncReadyCallback)on_session,
+				 cbdata);
+	g_object_unref (session);
 }
