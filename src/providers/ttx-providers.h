@@ -56,7 +56,7 @@ static const struct {
 	/* for now, disable Ceefax */
 	/* { "cfx",        ttx_provider_ceefax_uk }, */
 	{ "eins",       ttx_provider_eins_de   },
-	{ "hrt",        ttx_provider_hrt_hr    },
+	/* { "hrt",        ttx_provider_hrt_hr    }, */
 	{ "mtv3",       ttx_provider_mtv3_fi   },
 	{ "nos",        ttx_provider_nos_nl    },
 	{ "orf",        ttx_provider_orf_at    },
@@ -65,7 +65,7 @@ static const struct {
 	{ "rtve",       ttx_provider_rtve_es   },
 	{ "rtvslo",     ttx_provider_rtvslo_si },
 	{ "vrt",        ttx_provider_een_be    },
-	{ "yle",        ttx_provider_yle_fi    },
+	{ "yle",        ttx_provider_yle_fi    }
 
 };
 
