@@ -15,7 +15,7 @@
 ## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 AC_PREREQ([2.67])
-AC_INIT([ttx],[0.0.3],[],[ttx])
+AC_INIT([ttx],[0.0.4],[],[ttx])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([src/ttx.c])
 AC_CONFIG_MACRO_DIR([m4])
@@ -63,7 +63,7 @@ AC_SUBST(TTX_LOCALEDIR,[${datadir}/locale])
 AC_DEFINE_UNQUOTED([TTX_APP_ID], ["nl.djcbsoftware.ttx"], [application-id])
 
 # glib2?
-PKG_CHECK_MODULES(GLIB,glib-2.0 >= 2.30 gobject-2.0)
+PKG_CHECK_MODULES(GLIB,glib-2.0 >= 2.32 gobject-2.0)
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 glib_version="`$PKG_CONFIG --modversion glib-2.0`"
@@ -85,7 +85,7 @@ AC_SUBST(GDK_PIXBUF_CFLAGS)
 AC_SUBST(GDK_PIXBUF_LIBS)
 gdk_pixbuf_version="`$PKG_CONFIG --modversion gdk-pixbuf-2.0`"
 
-PKG_CHECK_MODULES(LIBSOUP,libsoup-2.4)
+PKG_CHECK_MODULES(LIBSOUP,libsoup-2.4 >= 2.42)
 AC_SUBST(LIBSOUP_CFLAGS)
 AC_SUBST(LIBSOUP_LIBS)
 libsoup_version="`$PKG_CONFIG --modversion libsoup-2.4`"
