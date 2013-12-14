@@ -216,6 +216,8 @@ on_completed (TTXRetrievalStatus status,
 	GdkPixbuf *pixbuf;
 	int h, w;
 
+	self->priv->retrieving = FALSE;
+	
 	if (status != TTX_RETRIEVAL_OK) {
 		g_warning ("an error occured retrieving %u/%u",
 			   page, subpage);
@@ -241,7 +243,6 @@ on_completed (TTXRetrievalStatus status,
 	self->priv->subpage = subpage;
 
 	update_entry (self);
-	self->priv->retrieving = FALSE; /* we're done */
 }
 
 
