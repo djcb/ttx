@@ -15,7 +15,7 @@
 ## Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 AC_PREREQ([2.67])
-AC_INIT([ttx],[0.0.4],[],[ttx])
+AC_INIT([ttx],[0.0.5],[],[ttx])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_SRCDIR([src/ttx.c])
 AC_CONFIG_MACRO_DIR([m4])

@@ -1,8 +1,8 @@
 * TTX
 
-  The successor to the TTB Teletekst browser which broke due to some changes in
-  the Teletekst website. TTB was in Python, but TTX is written in C.  TTX is
-  very young, but the basics work.
+  The successor to the /TTB/ Teletekst browser which broke due to some changes
+  in the Teletekst website. TTB was written in Python, but TTX is written in
+  C.  TTX is very young, but the basics work.
 
 ** providers
 
@@ -11,7 +11,6 @@
 
    - Eins (German)
    - Eén Teletekst (Belgian, Dutch)
-   - HRT (Croatian)
    - MTV3 (Finnish)
    - NOS Teletekst (Dutch)
    - ORF (Austrian)
@@ -20,6 +19,8 @@
    - RTVE (Spanish)
    - RTV (Slovenian)
    - YLE (Finnish)
+
+   - /HRT (Croatian)/ is currently broken
 
    TTX is designed to make it easy to add other providers, esp. when they are
    mere variations of providers which are already supported. See
@@ -34,8 +35,8 @@
    - libsoup 2.4
    - libxml2
 
-   (and for (re)building you'll the typically tools – gcc or clang and friends,
-   autotools, libtool, pkg-config.
+   (and for (re)building you'll use the typically tools – ~gcc~ or ~clang~ and friends,
+   autotools, ~libtool~, ~pkg-config~.
 
 ** download
 
