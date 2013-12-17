@@ -114,7 +114,6 @@ ttx_http_retrieve (const char *uri, const char *local_path,
 		   TTXHTTPCompletedFunc func, gpointer user_data)
 {
 	SoupMessage	*msg;
-	SoupMessageBody *mbody;
 	SoupSession	*session;
 	CBData		*cbdata;
 
@@ -123,12 +122,6 @@ ttx_http_retrieve (const char *uri, const char *local_path,
 	g_return_if_fail (func);
 
 	msg	= soup_message_new ("GET", uri);
-	g_object_get (G_OBJECT(msg), "response-body", &mbody, NULL);
-
-        soup_message_body_set_accumulate (mbody, FALSE);
-        soup_message_body_free (mbody);
-
-
 	session = soup_session_new_with_options (
 		"timeout", 8, 
 		"user-agent", PACKAGE_NAME "/" PACKAGE_VERSION,
