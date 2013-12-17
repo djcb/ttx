@@ -23,14 +23,12 @@ desktop_DATA= $(desktop_in_files:.desktop.in=.desktop)
 icondir=$(datadir)/icons/hicolor/48x48/apps
 icon_DATA=ttx-gtk.png
 
-EXTRA_DIST= ttx-gtk.desktop.in ttx-gtk.png autogen.sh
 ACLOCAL_AMFLAGS = -I m4
 
-
 INTLTOOL_FILES =			\
-		intltool-extract.in	\
-		intltool-merge.in	\
-		intltool-update.in
+	intltool-extract.in		\
+	intltool-merge.in		\
+	intltool-update.in
 
 
 MAINTAINERCLEANFILES =			\
@@ -71,3 +69,8 @@ DISTCLEANFILES=				\
 	intltool-merge			\
 	intltool-update			\
 	po/.intltool-merge-cache
+
+EXTRA_DIST=				\
+	README.org			\
+	ttx-gtk.desktop.in		\
+	ttx-gtk.png autogen.sh
