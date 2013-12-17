@@ -689,8 +689,9 @@ ttx_window_request_page (TTXWindow *self,
 			 TTXProviderID prov_id, unsigned page,
 			 unsigned subpage)
 {
-	const char *combo_id;
-	GtkComboBox *combo;
+	const char		*combo_id;
+	GtkComboBox		*combo;
+	const TTXProvider	*prov;
 
 	g_return_if_fail (TTX_IS_WINDOW(self));
 	g_return_if_fail (page >= 100 && page <= 999);
@@ -705,6 +706,17 @@ ttx_window_request_page (TTXWindow *self,
 	if (!prov_id)
 		prov_id = get_provider_id (self);
 
+	if (prov_id) {
+		prov = ttx_provider_mgr_get_provider (
+			self->priv->prov_mgr, prov_id);
+		if (!prov) {
+			g_printerr (_("unknown teletext provider %s\n"),
+				    prov_id);
+			prov_id = "nos"; /* default */
+		}
+		
+	}
+	
 	combo	 = GTK_COMBO_BOX(self->priv->combo);
 	combo_id = gtk_combo_box_get_active_id (combo);
 
