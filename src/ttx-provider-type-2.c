@@ -107,21 +107,22 @@ static GSList*
 get_links (const char *htmlpath, const char *href_rx,
 	   TTXLinkRemapFunc remap_func)
 {
-	gboolean rv;
-	GFile *file;
-	GError *err;
-	char *data, *b, *e;
-	gsize len;
-	GSList *lst;
+	gboolean	 rv;
+	GFile		*file;
+	GError		*err;
+	char		*data, *b, *e;
+	gsize		 len;
+	GSList		*lst;
 
 	file = g_file_new_for_path (htmlpath);
 
-	lst = NULL;
-	err = NULL;
-	rv = g_file_load_contents (file, NULL, &data, &len, NULL,
+	data = NULL;
+	lst  = NULL;
+	err  = NULL;
+	rv   = g_file_load_contents (file, NULL, &data, &len, NULL,
 				   &err);
 	if (!rv) {
-	g_warning ("failed to load %s: %s", htmlpath,
+		g_warning ("failed to load %s: %s", htmlpath,
 			   err ? err->message : "something went wrong");
 		g_clear_error (&err);
 		goto leave;
@@ -148,7 +149,7 @@ get_links (const char *htmlpath, const char *href_rx,
 	</map>
 	*/
 	lst = process_map (b, href_rx, remap_func);
-
+	
 leave:
 	g_object_unref (file);
 	g_free (data);
