@@ -18,6 +18,7 @@
 */
 #include <config.h>
 #include <errno.h>
+#include <unistd.h>
 
 #include <libxml/parser.h>
 #include <libxml/tree.h>
@@ -130,21 +131,30 @@ parse_xml_links (xmlNodeSetPtr nodeset)
 	return lst;
 }
 
+static void
+xml_err_handler (void *ctx, const char *msg, ...)
+{
+	/* empty */
+}
 
 static GSList*
 parse_xml (const char *path)
 {
-	xmlDocPtr doc;
-	xmlXPathContextPtr context;
-	xmlXPathObjectPtr result;
-	GSList *lst1, *lst2;
-	xmlChar *xpath;
-
+	xmlDocPtr		 doc;
+	xmlXPathContextPtr	 context;
+	xmlXPathObjectPtr	 result;
+	GSList			*lst1, *lst2;
+	xmlChar			*xpath;
+	xmlGenericErrorFunc	 err_handler;
+	
 	lst1	= lst2 = NULL;
 	doc	= NULL;
 	context = NULL;
 	result	= NULL;
 
+	err_handler = (xmlGenericErrorFunc)xml_err_handler;
+	initGenericErrorDefaultFunc (&err_handler);
+	
 	if (!(doc = xmlParseFile (path))) {
 		g_warning ("error parsing %s", path);
 		goto leave;
@@ -206,7 +216,7 @@ on_got_xml (TTXHTTPStatus hstatus, const char *xmlpath, CBData *cbdata)
 
 	cb_data_destroy (cbdata);
 
-	if (remove (xmlpath) != 0)
+	if (access (xmlpath, F_OK) == 0 && remove (xmlpath) != 0)
 		g_warning ("failed to unlink %s: %s",
 			   xmlpath, strerror (errno));
 }
@@ -237,7 +247,8 @@ on_got_page (TTXHTTPStatus hstatus, const char *path, CBData *cbdata)
 
 gboolean
 ttx_provider_type_1_retrieve (unsigned page, unsigned subpage,
-			      const char *page_uri_frm, const char *xml_uri_frm,
+			      const char *page_uri_frm,
+			      const char *xml_uri_frm,
 			      const char *dir, TTXProviderResultFunc func,
 			      gpointer user_data)
 {
@@ -262,7 +273,8 @@ ttx_provider_type_1_retrieve (unsigned page, unsigned subpage,
 	page_uri = g_strdup_printf (page_uri_frm, page, subpage);
 	path = g_strdup_printf ("%s/%u-%u.gif", dir, page, subpage);
 
-	ttx_http_retrieve (page_uri, path, (TTXHTTPCompletedFunc)on_got_page,
+	ttx_http_retrieve (page_uri, path,
+			   (TTXHTTPCompletedFunc)on_got_page,
 			   cbdata);
 	g_free (page_uri);
 	g_free (path);

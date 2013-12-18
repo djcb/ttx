@@ -50,7 +50,8 @@ process_map (const char *map, const char *href_rx,
 		href_rx, NULL);
 
 	rx = g_regex_new (area_rx,
-			  G_REGEX_UNGREEDY|G_REGEX_OPTIMIZE|G_REGEX_CASELESS,
+			  G_REGEX_UNGREEDY|G_REGEX_OPTIMIZE|
+			  G_REGEX_CASELESS,
 			  0, &err);
 	g_free (area_rx);
 	if (!rx) {
@@ -184,7 +185,7 @@ on_got_links (TTXHTTPStatus hstatus, const char *htmlpath,
 
 	ttx_provider_cb_data_destroy (cbdata);
 
-	if (remove (htmlpath) != 0)
+	if (access (htmlpath, F_OK) == 0 && remove (htmlpath) != 0)
 		g_warning ("failed to unlink %s: %s",
 			  htmlpath, strerror (errno));
 }

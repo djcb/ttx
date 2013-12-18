@@ -153,11 +153,12 @@ ttx_window_class_init (TTXWindowClass *klass)
 	g_type_class_add_private (gobj_class, sizeof(TTXWindowPrivate));
 
 	obj_properties[PROP_PROVIDER_MGR] =
-		g_param_spec_pointer ("provider-mgr",
-				      "provider-mgr",
-				      "TTXProviderMgr construct property",
-				      G_PARAM_CONSTRUCT_ONLY|G_PARAM_WRITABLE);
-
+		g_param_spec_pointer (
+			"provider-mgr",
+			"provider-mgr",
+			"TTXProviderMgr construct property",
+			G_PARAM_CONSTRUCT_ONLY|G_PARAM_WRITABLE);
+	
 	g_object_class_install_properties (gobj_class,
 					   PROP_NUM, obj_properties);
 }
@@ -280,15 +281,19 @@ get_entry_box (TTXWindow *self)
 	gtk_entry_set_max_length (GTK_ENTRY(entry_sub), 2);
 	gtk_entry_set_width_chars (GTK_ENTRY(entry_sub), 2);
 
-	gtk_box_pack_start (GTK_BOX(entry_box), entry_main, FALSE, FALSE, 2);
-	gtk_box_pack_start (GTK_BOX(entry_box), entry_sub, FALSE, FALSE, 2);
+	gtk_box_pack_start (GTK_BOX(entry_box), entry_main,
+			    FALSE, FALSE, 2);
+	gtk_box_pack_start (GTK_BOX(entry_box), entry_sub,
+			    FALSE, FALSE, 2);
 
 	self->priv->page_entry    = entry_main;
 	self->priv->subpage_entry = entry_sub;
 
-	g_signal_connect (entry_main, "activate", G_CALLBACK(on_entry_activate),
+	g_signal_connect (entry_main, "activate",
+			  G_CALLBACK(on_entry_activate),
 			  self);
-	g_signal_connect (entry_sub, "activate", G_CALLBACK(on_entry_activate),
+	g_signal_connect (entry_sub, "activate",
+			  G_CALLBACK(on_entry_activate),
 			  self);
 
 	update_entry (self);
@@ -653,7 +658,7 @@ ttx_window_finalize (GObject *obj)
 
 	free_links (self);
 	reset_img_file (self, NULL);
-
+	
 	if (self->priv->settings)
 		g_object_unref (self->priv->settings);
 
@@ -724,7 +729,8 @@ ttx_window_request_page (TTXWindow *self,
 
 	if (g_strcmp0 (prov_id, combo_id) != 0)
 		if (!gtk_combo_box_set_active_id (combo, prov_id))
-			g_warning ("failed to set active id to %s", prov_id);
+			g_warning ("failed to set active id to %s",
+				   prov_id);
 
 	ttx_provider_mgr_retrieve
 		(self->priv->prov_mgr,
